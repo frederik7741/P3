@@ -322,7 +322,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392fe5261bce01449aec0eace81805e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backButtonPrefab: {fileID: 3376588098737992919, guid: fac868f1dca06f449bf89533f72c85c8, type: 3}
   headerPrefab: {fileID: 5715297091195731740, guid: c11d6a136df82794cb24e8d75f3077a6, type: 3}
   backgroundPanel: {fileID: 1298181393}
   returnButtonSize: {x: 100, y: 50}
