@@ -247,8 +247,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392fe5261bce01449aec0eace81805e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  returnButtonPrefab: {fileID: 7161225463705820139, guid: 5bd793d1307d5ef44a5ec1af912beb2e, type: 3}
-  headerParent: {fileID: 7377635615941413325, guid: c11d6a136df82794cb24e8d75f3077a6, type: 3}
+  headerPrefab: {fileID: 5715297091195731740, guid: c11d6a136df82794cb24e8d75f3077a6, type: 3}
+  backgroundPanel: {fileID: 1546638395}
   returnButtonSize: {x: 100, y: 50}
   buttonPrefab: {fileID: 5289716448591133134, guid: 516743d2688b7174cb8b2d3c988daa91, type: 3}
   buttonParent: {fileID: 1546638395}

@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using UnityEngine.Events; // Add this line to use UnityAction
 
 public class CanvasInteractivity : MonoBehaviour
 {
@@ -49,16 +51,17 @@ public class CanvasInteractivity : MonoBehaviour
             btn.onClick.AddListener(ShowOptions);
         }
 
-// Instantiate "Øvelser" and "Data" buttons outside the loop, directly under the rootCanvas
+        // Instantiate "Øvelser" and "Data" buttons outside the loop, directly under the rootCanvas
         Canvas rootCanvas = backgroundPanel.GetComponentInParent<Canvas>();
         øvelserButton = Instantiate(buttonPrefab, rootCanvas.transform).GetComponent<Button>();
         øvelserButton.GetComponentInChildren<TextMeshProUGUI>().text = "Øvelser";
         øvelserButton.gameObject.SetActive(false); // Initially hide the button
+        øvelserButton.onClick.AddListener(OpenOvelserScene); // Add listener here
 
         dataButton = Instantiate(buttonPrefab, rootCanvas.transform).GetComponent<Button>();
         dataButton.GetComponentInChildren<TextMeshProUGUI>().text = "Data";
         dataButton.gameObject.SetActive(false); // Initially hide the button
-
+        dataButton.onClick.AddListener(OpenDataScene); // Add listener here
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -77,27 +80,30 @@ public class CanvasInteractivity : MonoBehaviour
 
     private void ShowOptions()
     {
+        Debug.Log("Button Clicked!"); // Add this line to check if the method is called.
+        
         if (øvelserButton != null && dataButton != null)
         {
             øvelserButton.gameObject.SetActive(true);
             dataButton.gameObject.SetActive(true);
 
-            // Canvas size
-            Vector2 canvasSize = øvelserButton.GetComponentInParent<CanvasScaler>().referenceResolution;
+            // Position the "Øvelser" button at the bottom-left
+            øvelserButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-buttonSize.x / 1, -buttonSize.y / 0.2f);
 
-            // Position the "Øvelse" button to the bottom center-left
-            øvelserButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-buttonSize.x / 1, -canvasSize.y / 2 + buttonSize.y + 5);
-
-            // Position the "Data" button to the bottom center-right
-            dataButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(buttonSize.x / 1, -canvasSize.y / 2 + buttonSize.y + 5);
+            // Position the "Data" button at the bottom-right
+            dataButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(buttonSize.x / 1, -buttonSize.y / 0.2f);
         }
     }
 
+    private void OpenOvelserScene()
+    {
+        LoadSceneByName("Øvelser");
+    }
 
-
-
-
-
+    private void OpenDataScene()
+    {
+        LoadSceneByName("Data");
+    }
 
     private void LoadSceneByName(string sceneName)
     {
