@@ -32,11 +32,11 @@ public class CanvasInteractivity : MonoBehaviour
         // Setup GridLayoutGroup for the buttons
         GridLayoutGroup grid = buttonParent.gameObject.AddComponent<GridLayoutGroup>();
         grid.cellSize = buttonSize;
-        grid.spacing = new Vector2(10, 10);
+        grid.spacing = new Vector2(10, 50);
 
         // Adjust the top padding to move the buttons down
-        grid.padding.top = 150;
-
+        grid.padding.top = 350;
+        grid.padding.left = 500;
         // Dynamically create name buttons
         for (int i = 0; i < buttonNames.Length; i++)
         {
@@ -54,16 +54,19 @@ public class CanvasInteractivity : MonoBehaviour
         // Instantiate "Øvelser" and "Data" buttons outside the loop, directly under the rootCanvas
         Canvas rootCanvas = backgroundPanel.GetComponentInParent<Canvas>();
         øvelserButton = Instantiate(buttonPrefab, rootCanvas.transform).GetComponent<Button>();
+        øvelserButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0); // Adjust as needed
         øvelserButton.GetComponentInChildren<TextMeshProUGUI>().text = "Øvelser";
         øvelserButton.gameObject.SetActive(false); // Initially hide the button
         øvelserButton.onClick.AddListener(OpenOvelserScene); // Add listener here
 
         dataButton = Instantiate(buttonPrefab, rootCanvas.transform).GetComponent<Button>();
+        dataButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(60, -50); // Adjust as needed
         dataButton.GetComponentInChildren<TextMeshProUGUI>().text = "Data";
         dataButton.gameObject.SetActive(false); // Initially hide the button
         dataButton.onClick.AddListener(OpenDataScene); // Add listener here
         
         Button returnButton = Instantiate(buttonPrefab, rootCanvas.transform).GetComponent<Button>();
+        returnButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -100); // Set position
         returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return";
         returnButton.onClick.AddListener(ReturnToPreviousScene); // Add listener to return button
 
