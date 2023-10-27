@@ -62,6 +62,11 @@ public class CanvasInteractivity : MonoBehaviour
         dataButton.GetComponentInChildren<TextMeshProUGUI>().text = "Data";
         dataButton.gameObject.SetActive(false); // Initially hide the button
         dataButton.onClick.AddListener(OpenDataScene); // Add listener here
+        
+        Button returnButton = Instantiate(buttonPrefab, rootCanvas.transform).GetComponent<Button>();
+        returnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Return";
+        returnButton.onClick.AddListener(ReturnToPreviousScene); // Add listener to return button
+
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
