@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
-using System.Collections.Generic; // For Dictionary
-using TMPro; // Add this line for TextMeshPro
+using System.Collections.Generic; // Add this line
+using TMPro;
 
 [System.Serializable]
 public class PatientData
@@ -15,26 +15,41 @@ public class PatientData
 public class DataSender : MonoBehaviour
 {
 
+// Assuming you have a reference to your TextMeshPro buttons
+public TextMeshProUGUI[] dateButtons;
 
 public void OnExerciseCompleted() // Call this method when an exercise is completed
 {
-
     int patientId = 123; // Replace with actual patient ID
-    string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm");; // Current date
     int repetitions = 10; // Replace with actual repetitions of the exercise completed
     
-    // Optionally, send the data to the server to save it
-    StartCoroutine(PostRequest(patientId, date, repetitions)); // Start the coroutine to send data
+    DateUIUpdater dateUpdater = FindObjectOfType<DateUIUpdater>();
+    if (dateUpdater != null)
+    {
+        string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"); // Current date and time
+        dateUpdater.QueueDateUpdate(date); // Queue the new date for updating
+    }
+    else
+    {
+        Debug.LogError("DateUIUpdater component not found in the scene!");
+    }
+}
 
- DateUIUpdater dateUpdater = FindObjectOfType<DateUIUpdater>();
-        if (dateUpdater != null)
-        {
-            dateUpdater.UpdateDateButtons();
-        }
-        else
-        {
-            Debug.LogError("DateUIUpdater component not found in the scene!");
-        }
+private void UpdateDateButtons(string newDate)
+{
+    if (dateButtons.Length == 1)
+    {
+        // If there's only one button, just set its text to the new date
+        dateButtons[0].text = newDate;
+        return;
+    }
+
+    // If there's more than one button, shift the dates down and add the new date at the top
+    for (int i = dateButtons.Length - 1; i > 0; i--)
+    {
+        dateButtons[i].text = dateButtons[i - 1].text; // Move the text down one button
+    }
+    dateButtons[0].text = newDate; // Set the latest date to the first button
 }
 
 
