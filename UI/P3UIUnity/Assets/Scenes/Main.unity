@@ -2648,7 +2648,7 @@ GameObject:
   - component: {fileID: 459246906}
   - component: {fileID: 459246909}
   m_Layer: 5
-  m_Name: Button
+  m_Name: "Start\xD8velse"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2717,7 +2717,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 459246907}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 899969518}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &459246907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2768,6 +2780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d8f7dd820ad7bd4ca76c9eae2e8a0a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  patientButtons: []
   dateButtons: []
 --- !u!1 &466305946
 GameObject:
@@ -3103,11 +3116,11 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 899969523}
         m_TargetAssemblyTypeName: DataSender, Assembly-CSharp
-        m_MethodName: OnPatientClicked
-        m_Mode: 3
+        m_MethodName: OnPatientButtonClicked
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 571848290}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -4655,7 +4668,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d8f7dd820ad7bd4ca76c9eae2e8a0a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dateButtons: []
 --- !u!114 &899969524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7352,11 +7364,11 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 899969523}
         m_TargetAssemblyTypeName: DataSender, Assembly-CSharp
-        m_MethodName: OnPatientClicked
-        m_Mode: 3
+        m_MethodName: OnPatientButtonClicked
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1501654819}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -7412,7 +7424,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d8f7dd820ad7bd4ca76c9eae2e8a0a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dateButtons: []
 --- !u!1 &1512409006
 GameObject:
   m_ObjectHideFlags: 0
@@ -8689,11 +8700,11 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 899969523}
         m_TargetAssemblyTypeName: DataSender, Assembly-CSharp
-        m_MethodName: OnPatientClicked
-        m_Mode: 3
+        m_MethodName: OnPatientButtonClicked
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1897661574}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -9026,11 +9037,11 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 899969523}
         m_TargetAssemblyTypeName: DataSender, Assembly-CSharp
-        m_MethodName: OnPatientClicked
-        m_Mode: 3
+        m_MethodName: OnPatientButtonClicked
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 2005380307}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

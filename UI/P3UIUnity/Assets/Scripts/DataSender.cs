@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic; // Add this line
 using TMPro;
 
 [System.Serializable]
@@ -12,81 +12,97 @@ public class PatientData
     public int repetitions;
 }
 
+[System.Serializable]
+public class PatientButtonPair
+{
+    public Button button; // Assign the actual button from the inspector
+    public int patientId; // Assign the patient ID manually in the inspector
+}
+
 public class DataSender : MonoBehaviour
 {
+    public TextMeshProUGUI[] dateButtons;
+    public PatientButtonPair[] patientButtons;
+    private int currentPatientId = -1; // Variable to store the current patient ID
+    public string baseURL = "http://localhost:5000/save_data";
 
-// Assuming you have a reference to your TextMeshPro buttons
-public TextMeshProUGUI[] dateButtons;
+    void Start()
+    {
+        // Initialize buttons in the start method
+        foreach (var pair in patientButtons)
+        {
+            pair.button.onClick.AddListener(delegate { OnPatientButtonClicked(pair.patientId); });
+        }
+    }
 
-public void OnExerciseCompleted() // Call this method when an exercise is completed
+    public void OnPatientButtonClicked(int patientId)
+    {
+        if (currentPatientId != patientId)
+        {
+            currentPatientId = patientId; // Set the current patient ID
+            ResetPatientUI(); // Clear the previous patient's data from the UI
+            Debug.Log($"Patient button clicked. Patient ID: {currentPatientId}");
+        }
+        else
+        {
+            Debug.Log($"Patient ID {currentPatientId} is already selected.");
+        }
+    }
+
+    private void ResetPatientUI()
+    {
+        // Clear or update the UI elements associated with patient data
+        foreach (var dateButton in dateButtons)
+        {
+            dateButton.text = "No data"; // Reset the text of date buttons
+        }
+        // Additional UI reset logic can go here
+    }
+
+   public void OnExerciseCompleted()
 {
-    int patientId = 123; // Replace with actual patient ID
+    Debug.Log("clicked");
+    if (currentPatientId > 0) // Note: This condition should be <= 0 based on your log message.
+    {
+        Debug.LogError("No patient selected.");
+        return;
+    }
+
+    string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"); // Current date and time
     int repetitions = 10; // Replace with actual repetitions of the exercise completed
-    
+
+    // Find the DateUIUpdater in the scene and queue the new date update.
     DateUIUpdater dateUpdater = FindObjectOfType<DateUIUpdater>();
     if (dateUpdater != null)
     {
-        string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"); // Current date and time
-        dateUpdater.QueueDateUpdate(date); // Queue the new date for updating
+        dateUpdater.QueueDateUpdate(date);
     }
     else
     {
         Debug.LogError("DateUIUpdater component not found in the scene!");
     }
-}
 
-private void UpdateDateButtons(string newDate)
-{
-    if (dateButtons.Length == 1)
-    {
-        // If there's only one button, just set its text to the new date
-        dateButtons[0].text = newDate;
-        return;
-    }
-
-    // If there's more than one button, shift the dates down and add the new date at the top
-    for (int i = dateButtons.Length - 1; i > 0; i--)
-    {
-        dateButtons[i].text = dateButtons[i - 1].text; // Move the text down one button
-    }
-    dateButtons[0].text = newDate; // Set the latest date to the first button
+    StartCoroutine(PostRequest(currentPatientId, date, repetitions)); // Send data to server
 }
 
 
-    string baseURL = "http://localhost:5000/save_data"; // Use the IP address of your server here if not running locally
-
-    public void OnButtonClick() // This method will be visible in the inspector
+    IEnumerator PostRequest(int patientId, string date, int repetitions)
     {
-        int patientId = 123; // Replace with actual patient ID
-        string date = System.DateTime.Now.ToString("yyyy-MM-dd");
-        int repetitions = 10; // Replace with actual repetitions
-        StartCoroutine(PostRequest(patientId, date, repetitions)); // Start the coroutine to send data
-    }
+        PatientData data = new PatientData
+        {
+            patient_id = patientId,
+            date = date,
+            repetitions = repetitions
+        };
 
-   IEnumerator PostRequest(int patientId, string date, int repetitions)
-{
-    PatientData data = new PatientData
-    {
-        patient_id = patientId,
-        date = date,
-        repetitions = repetitions
-    };
-
-    // Convert the object to JSON
-    string jsonData = JsonUtility.ToJson(data);
-
-        // Create a new UnityWebRequest, setting the URL and method (POST)
+        string jsonData = JsonUtility.ToJson(data);
         using (UnityWebRequest www = new UnityWebRequest(baseURL, "POST"))
         {
-            // Convert the JSON string to a byte array
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonData);
-            www.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-            www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-
-            // Set the content type header to 'application/json'
+            www.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            www.downloadHandler = new DownloadHandlerBuffer();
             www.SetRequestHeader("Content-Type", "application/json");
 
-            // Send the request and wait for a response
             yield return www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)
@@ -96,6 +112,8 @@ private void UpdateDateButtons(string newDate)
             else
             {
                 Debug.Log("Response: " + www.downloadHandler.text);
+                // Update the UI to show the new date
+                dateButtons[0].text = date; // Assuming the first button is the most recent
             }
         }
     }
