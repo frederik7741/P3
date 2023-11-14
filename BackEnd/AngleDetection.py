@@ -3,7 +3,7 @@
 import numpy as np
 import pyzed.sl as sl
 import math
-# import main
+import main
 
 def points_to_bones(point_1, point_2):
     bone_vector = [point_2[0] - point_1[0], point_2[1] - point_1[1], point_2[2] - point_1[2]]
@@ -30,17 +30,41 @@ def find_angle(bone_1, bone_2):
 # find_angle(points_to_bones(left_point_1, left_point_2), points_to_bones(left_point_2, left_point_3))
 
 
+
 # Testing
-coordinate_1 = [4, -3, 0] #key_point_1
-coordinate_2 = [4, 2, 0] #key_point_2
-
-print(f"coordinate_1: {coordinate_1}")
-print(f"coordinate_2: {coordinate_2}")
-
-print(f"Angle: {find_angle(coordinate_1, coordinate_2)}")
+key_point_1 = [4, -3, 0]
+key_point_2 = [4, 2, 0]
+key_point_3 = [6, 2, 0]
 
 
-detected_body = bodies.get_first_body_2d_image()
+depth_value_1 = main.depth_image[int(key_point_1[1]), int(key_point_1[0])]
+depth_value_2 = main.depth_image[int(key_point_2[1]), int(key_point_2[0])]
+depth_value_3 = main.depth_image[int(key_point_3[1]), int(key_point_3[0])]
+
+
+coordinate_1 = [key_point_1[0], key_point_1[1], depth_value_1]
+coordinate_2 = [key_point_2[0], key_point_2[1], depth_value_2]
+coordinate_3 = [key_point_3[0], key_point_3[1], depth_value_3]
+
+
+
+# Calculating bones and angles
+bone_vector_1_2 = points_to_bones(coordinate_1, coordinate_2)
+bone_vector_2_3 = points_to_bones(coordinate_2, coordinate_3)
+
+print(f"Bone Vector 1-2: {bone_vector_1_2}")
+print(f"Bone Vector 2-3: {bone_vector_2_3}")
+
+# Testing
+print(f"Angle 1-2 and 2-3: {find_angle(bone_vector_1_2, bone_vector_2_3)}")
+
+#print(f"coordinate_1: {coordinate_1}")
+#print(f"coordinate_2: {coordinate_2}")
+
+#print(f"Angle: {find_angle(coordinate_1, coordinate_2)}")
+
+
+#detected_body = bodies.get_first_body_2d_image()
 
 # # Structures for detected bodies
 # # body_data = sl.BodyTrackingData()  # Create an instance of the body tracking data (do this elsewhere in another script)
