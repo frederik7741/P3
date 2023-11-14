@@ -9,33 +9,53 @@ public class DateUIUpdater : MonoBehaviour
 
     void OnEnable()
     {
-        // Update the UI elements with the stored dates
-        UpdateDateButtons();
+        ActivateAndUpdateButtons();
     }
 
     public void QueueDateUpdate(string newDate)
     {
-        // Store the new date
+        Debug.Log($"Enqueuing new date: {newDate}");
         dateQueue.Enqueue(newDate);
 
-        // If the object is active, immediately update the buttons
-        if (gameObject.activeInHierarchy)
-        {
-            UpdateDateButtons();
-        }
+        // It's not necessary to check if the gameObject is active in the hierarchy here
+        // because this script's gameObject should always be active for the component to work.
+        ActivateAndUpdateButtons();
     }
 
     public void UpdateDateButtons()
     {
+        Debug.Log($"Updating Date Buttons. Queue Count: {dateQueue.Count}");
         while (dateQueue.Count > 0 && dateButtons.Length > 0)
         {
             string dateToUpdate = dateQueue.Dequeue();
-            // Shift the dates down and add the new date at the top
+            Debug.Log($"Dequeuing date: {dateToUpdate}");
+
             for (int i = dateButtons.Length - 1; i > 0; i--)
             {
-                dateButtons[i].text = dateButtons[i - 1].text; // Move the text down one button
+                dateButtons[i].text = dateButtons[i - 1].text;
             }
-            dateButtons[0].text = dateToUpdate; // Set the latest date to the first button
+            dateButtons[0].text = dateToUpdate;
         }
+    }
+
+    // Call this method after date buttons are activated to ensure they're updated with any queued data
+    public void ActivateAndUpdateButtons()
+    {
+        // Check if date buttons are active and update them
+        foreach (var button in dateButtons)
+        {
+            if (button.gameObject.activeInHierarchy)
+            {
+                UpdateDateButtons();
+                break; // Only need to update once if at least one button is active
+            }
+        }
+    }
+
+    // This method can be linked to the OnClick event of the date button if needed.
+    public void OnDateButtonClick()
+    {
+        // Ensure any queued data is processed and the UI is updated.
+        UpdateDateButtons();
     }
 }

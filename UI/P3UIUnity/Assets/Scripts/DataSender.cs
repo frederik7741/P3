@@ -5,11 +5,25 @@ using System.Collections;
 using TMPro;
 
 [System.Serializable]
+public class ExerciseData
+{
+    public string date;
+    public int repetitions;
+}
+
+[System.Serializable]
 public class PatientData
 {
     public int patient_id;
     public string date;
     public int repetitions;
+}
+
+
+[System.Serializable]
+public class ExerciseDataWrapper
+{
+    public ExerciseData[] exerciseData;
 }
 
 [System.Serializable]
@@ -21,10 +35,12 @@ public class PatientButtonPair
 
 public class DataSender : MonoBehaviour
 {
+	
     public TextMeshProUGUI[] dateButtons;
     public PatientButtonPair[] patientButtons;
     private int currentPatientId = -1; // Variable to store the current patient ID
-    public string baseURL = "http://localhost:5000/save_data";
+    public string getExerciseDataURL = "http://localhost:5000/get_exercise_data/";
+	public string saveDataURL = "http://localhost:5000/save_data/";
 
     void Start()
     {
@@ -37,17 +53,14 @@ public class DataSender : MonoBehaviour
 
     public void OnPatientButtonClicked(int patientId)
     {
-        if (currentPatientId != patientId)
-        {
-            currentPatientId = patientId; // Set the current patient ID
-            ResetPatientUI(); // Clear the previous patient's data from the UI
-            Debug.Log($"Patient button clicked. Patient ID: {currentPatientId}");
-        }
-        else
-        {
-            Debug.Log($"Patient ID {currentPatientId} is already selected.");
-        }
+
+        currentPatientId = patientId;
+        ResetPatientUI(); // Reset the UI elements for the new patient
+        StartCoroutine(GetPatientExerciseData(patientId)); // Fetch the new patient's exercise data
+      
     }
+
+
 
     private void ResetPatientUI()
     {
@@ -59,10 +72,10 @@ public class DataSender : MonoBehaviour
         // Additional UI reset logic can go here
     }
 
-   public void OnExerciseCompleted()
+ public void OnExerciseCompleted()
 {
-    Debug.Log("clicked");
-    if (currentPatientId > 0) // Note: This condition should be <= 0 based on your log message.
+    
+    if (currentPatientId <= 0) // Check if no patient is selected
     {
         Debug.LogError("No patient selected.");
         return;
@@ -70,51 +83,110 @@ public class DataSender : MonoBehaviour
 
     string date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"); // Current date and time
     int repetitions = 10; // Replace with actual repetitions of the exercise completed
-
-    // Find the DateUIUpdater in the scene and queue the new date update.
     DateUIUpdater dateUpdater = FindObjectOfType<DateUIUpdater>();
+    
+    
     if (dateUpdater != null)
     {
+        Debug.Log($"currentPatientId: {currentPatientId}");
+        Debug.Log($"date: {date}");
+        Debug.Log($"repetitions: {repetitions}");
+
         dateUpdater.QueueDateUpdate(date);
+        Debug.Log($"QueueDateUpdate called with date: {date}");
     }
     else
     {
         Debug.LogError("DateUIUpdater component not found in the scene!");
     }
 
-    StartCoroutine(PostRequest(currentPatientId, date, repetitions)); // Send data to server
+    StartCoroutine(PostRequest(currentPatientId, date, repetitions)); // Send data to the server
 }
+ 
+
+ private IEnumerator PostRequest(int patientId, string date, int repetitions)
+ {
+     PatientData data = new PatientData
+     {
+         patient_id = patientId,
+         date = date,
+         repetitions = repetitions
+     };
+
+     string jsonData = JsonUtility.ToJson(data);
+     Debug.Log($"Sending JSON to server: {jsonData}");
+
+     using (UnityWebRequest www = UnityWebRequest.Post(saveDataURL, "POST"))
+     {
+         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonData);
+         www.uploadHandler = new UploadHandlerRaw(jsonToSend);
+         www.downloadHandler = new DownloadHandlerBuffer();
+         www.SetRequestHeader("Content-Type", "application/json");
+
+         Debug.Log($"Sending POST request to URL: {saveDataURL}");
+         yield return www.SendWebRequest();
+
+         if (www.result != UnityWebRequest.Result.Success)
+         {
+             Debug.LogError($"Error: {www.error}");
+             Debug.LogError($"Status Code: {www.responseCode}");
+         }
+         else
+         {
+             Debug.Log($"Server response: {www.downloadHandler.text}");
+         }
+     }
+ }
 
 
-    IEnumerator PostRequest(int patientId, string date, int repetitions)
+ private IEnumerator GetPatientExerciseData(int patientId)
+ {
+     using (UnityWebRequest www = UnityWebRequest.Get(getExerciseDataURL + patientId.ToString()))
+     {
+         yield return www.SendWebRequest();
+
+         if (www.result != UnityWebRequest.Result.Success)
+         {
+             Debug.LogError("Error Getting Exercise Data: " + www.error);
+         }
+         else
+         {
+             string jsonResponse = www.downloadHandler.text;
+             Debug.Log("Received JSON response: " + jsonResponse);
+
+             // The JSON array should be wrapped in an object with a key "exerciseData" on the server side.
+             // If that is not the case, you'll need to adjust the server response or adjust the JSON here as follows:
+             string adjustedJson = "{\"exerciseData\":" + jsonResponse + "}";
+
+             ExerciseDataWrapper wrapper = JsonUtility.FromJson<ExerciseDataWrapper>(adjustedJson);
+             if (wrapper != null && wrapper.exerciseData != null)
+             {
+                 // Enqueue each date for processing.
+                 foreach (var data in wrapper.exerciseData)
+                 {
+                     DateUIUpdater dateUpdater = FindObjectOfType<DateUIUpdater>();
+                     if (dateUpdater != null)
+                     {
+                         dateUpdater.QueueDateUpdate(data.date);
+                     }
+                 }
+             }
+             else
+             {
+                 Debug.LogError("Failed to parse exercise data.");
+             }
+         }
+     }
+ }
+
+
+
+
+
+
+public TMP_Text time;
+    public void OnTimeSliderChanged(Slider slider)
     {
-        PatientData data = new PatientData
-        {
-            patient_id = patientId,
-            date = date,
-            repetitions = repetitions
-        };
-
-        string jsonData = JsonUtility.ToJson(data);
-        using (UnityWebRequest www = new UnityWebRequest(baseURL, "POST"))
-        {
-            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonData);
-            www.uploadHandler = new UploadHandlerRaw(jsonToSend);
-            www.downloadHandler = new DownloadHandlerBuffer();
-            www.SetRequestHeader("Content-Type", "application/json");
-
-            yield return www.SendWebRequest();
-
-            if (www.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError("Error: " + www.error);
-            }
-            else
-            {
-                Debug.Log("Response: " + www.downloadHandler.text);
-                // Update the UI to show the new date
-                dateButtons[0].text = date; // Assuming the first button is the most recent
-            }
-        }
+        time.text = slider.value.ToString();
     }
 }
