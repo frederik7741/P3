@@ -66,44 +66,85 @@ while True:
             # Display the RGB image with the largest contour
             #cv2.imshow("Segmented RGB with Largest Contour", frame_with_contours)
 
-            if cv2.contourArea(largest_contour) > 1:
+            if contours:
+                # Find the contour with the maximum area
+                largest_contour = max(contours, key=cv2.contourArea)
 
-                hull = cv2.convexHull(largest_contour, returnPoints=True)
+                # Create an empty black image with the same size as the RGB image
+                frame_with_contours = np.zeros_like(image.get_data(), dtype=np.uint8)
 
-                if len(hull) >= 4 and len(largest_contour) >= 1000:
-                    print(len(hull))
-                    print(len(largest_contour))
-                    print(f"contours er fucking dumme")
-                    frame_with_contours = np.zeros_like(image.get_data(), dtype=np.uint8)
+                # Draw only the largest contour
+                cv2.drawContours(frame_with_contours, [largest_contour], -1, (0, 255, 0), 2)  # Green color, thickness 2
 
-                    cv2.drawContours(frame_with_contours, [hull], -1, (0, 255, 0), 2)
+                # Display the RGB image with the largest contour
+                cv2.imshow("Segmented RGB with Largest Contour", frame_with_contours)
 
-                    defects = cv2.convexityDefects(largest_contour, cv2.convexHull(largest_contour, returnPoints=True))
-                    if defects is not None:
-                        for i in range(defects.shape[0]):
-                            s,e,f, _ = defects[i,0]
-                            start = tuple(largest_contour[s][0])
-                            end = tuple(largest_contour[e][0])
-                            far = tuple(largest_contour[f][0])
+                # Display the segmented depth image
+                # cv2.imshow("Segmented Depth", depth_image)
 
-                            cv2.circle(frame_with_contours, far, 5, (0, 0, 255), -1)
+                # Display the binary mask for visualization
+            cv2.imshow("Foreground Mask", (foreground_mask * 255).astype('uint8'))
 
+            # Press 'q' to exit the loop
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
-                    cv2.imshow("Segmented RGB with Largest Contour", frame_with_contours)
-                    print(f"fuck dig")
-                    cv2.waitKey()
+    # Release the ZED camera and close OpenCV windows
+zed.close()
+cv2.destroyAllWindows()
+
+    #if cv2.contourArea(largest_contour) > 1:
+    #            if len(largest_contour) >=3:
+    #                epsilon = 0.01* cv2.arcLength(largest_contour, True)
+    #                approx_contour = cv2.approxPolyDP(largest_contour, epsilon, True)
+
+                    #hull = cv2.convexHull(largest_contour, returnPoints=False)
+
+                    #if len(hull) >= 3:
+
+                        # Ensure the indices are within bounds
+     #                   valid_indices = (hull[:, 0] < len(approx_contour))
+      #                  hull_points = approx_contour[hull[valid_indices, 0]]
+
+       #                 if len(hull_points) >= 3:
+        #                    frame_with_contours = np.zeros_like(image.get_data(), dtype=np.uint8)
+         #                   cv2.drawContours(frame_with_contours, [hull_points], -1, (0, 255, 0), 2)
+
+                            # Manually calculate convexity defects
+#                            hull_indices = hull[valid_indices, 0]
+  #                          defects = []
+ #                           for i in range(1, len(hull_indices) - 1):
+   #                             start = hull_indices[i - 1]
+    #                            end = hull_indices[i + 1]
+     #                           farthest = hull_indices[i]
+
+      #                          defects.append([start, end, farthest, 0])
+
+       #                     defects = np.array(defects)
+
+        #                    if defects is not None:
+         #                       for defect in defects:
+          #                          s, e, f, _ = defect
+           #                         start = tuple(approx_contour[s][0])
+            #                        end = tuple(approx_contour[e][0])
+             #                       far = tuple(approx_contour[f][0])
+
+              #              cv2.circle(frame_with_contours, far, 5, (0, 0, 255), -1)
+
+               #             cv2.imshow("Segmented RGB with Largest Contour", frame_with_contours)
+                #            cv2.waitKey(1)
 
 
         # Display the segmented depth image
-        # cv2.imshow("Segmented Depth", depth_image)
+            #cv2.imshow("Segmented Depth", depth_image)
 
         # Display the binary mask for visualization
-        cv2.imshow("Foreground Mask", (foreground_mask * 255).astype('uint8'))
+     #       cv2.imshow("Foreground Mask", (foreground_mask * 255).astype('uint8'))
 
     # Press 'q' to exit the loop
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    #if cv2.waitKey(1) & 0xFF == ord('q'):
+     #   break
 
 # Release the ZED camera and close OpenCV windows
-zed.close()
-cv2.destroyAllWindows()
+#zed.close()
+#cv2.destroyAllWindows()
