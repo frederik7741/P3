@@ -1,61 +1,69 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
+
+[System.Serializable]
+public class ExerciseData
+{
+    public int patient_id;
+    public string date;
+    public int repetitions;
+}
 
 public class DateUIUpdater : MonoBehaviour
 {
-    public TextMeshProUGUI[] dateButtons;
-    private Queue<string> dateQueue = new Queue<string>();
+    public Button[] dateButtons; // Buttons to display the exercise data
+    public TextMeshProUGUI idPlaceholder; // Placeholder to display the patient ID
+    public TextMeshProUGUI repsPlaceholder; // Placeholder to display the repetitions
+    public TextMeshProUGUI datePlaceholder; // Placeholder to display the date
+
+    private Queue<ExerciseData> exerciseDataQueue = new Queue<ExerciseData>();
 
     void OnEnable()
     {
         ActivateAndUpdateButtons();
     }
 
-    public void QueueDateUpdate(string newDate)
+    public void QueueExerciseData(ExerciseData newData)
     {
-        Debug.Log($"Enqueuing new date: {newDate}");
-        dateQueue.Enqueue(newDate);
-
-        // It's not necessary to check if the gameObject is active in the hierarchy here
-        // because this script's gameObject should always be active for the component to work.
-        ActivateAndUpdateButtons();
+        Debug.Log($"Queueing new exercise data: Date = {newData.date}, Reps = {newData.repetitions}");
+        exerciseDataQueue.Enqueue(newData);
     }
 
     public void UpdateDateButtons()
     {
-        Debug.Log($"Updating Date Buttons. Queue Count: {dateQueue.Count}");
-        while (dateQueue.Count > 0 && dateButtons.Length > 0)
-        {
-            string dateToUpdate = dateQueue.Dequeue();
-            Debug.Log($"Dequeuing date: {dateToUpdate}");
-
-            for (int i = dateButtons.Length - 1; i > 0; i--)
-            {
-                dateButtons[i].text = dateButtons[i - 1].text;
-            }
-            dateButtons[0].text = dateToUpdate;
-        }
-    }
-
-    // Call this method after date buttons are activated to ensure they're updated with any queued data
-    public void ActivateAndUpdateButtons()
-    {
-        // Check if date buttons are active and update them
+        int buttonIndex = 0;
         foreach (var button in dateButtons)
         {
-            if (button.gameObject.activeInHierarchy)
-            {
-                UpdateDateButtons();
-                break; // Only need to update once if at least one button is active
-            }
+            button.GetComponentInChildren<TextMeshProUGUI>().text = "No data"; // Reset the button text
+            button.onClick.RemoveAllListeners(); // Clear previous listeners
         }
+
+        while (exerciseDataQueue.Count > 0 && buttonIndex < dateButtons.Length)
+        {
+            ExerciseData data = exerciseDataQueue.Dequeue();
+            Button button = dateButtons[buttonIndex];
+            button.GetComponentInChildren<TextMeshProUGUI>().text = data.date; // Set the button text to the date
+            button.onClick.AddListener(() => UpdatePlaceholders(data)); // Set the button to update placeholders when clicked
+            buttonIndex++;
+        }
+
+        Debug.Log($"Updated {buttonIndex} buttons with data.");
     }
 
-    // This method can be linked to the OnClick event of the date button if needed.
-    public void OnDateButtonClick()
+    public void UpdatePlaceholders(ExerciseData data)
     {
-        // Ensure any queued data is processed and the UI is updated.
-        UpdateDateButtons();
+        idPlaceholder.text = $"ID: {data.patient_id}";
+        repsPlaceholder.text = $"Reps: {data.repetitions}";
+        datePlaceholder.text = $"Date: {data.date}";
+    }
+
+    private void ActivateAndUpdateButtons()
+    {
+        if (gameObject.activeInHierarchy)
+        {
+            UpdateDateButtons();
+        }
     }
 }
