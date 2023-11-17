@@ -54,7 +54,7 @@ def get_exercise_data(patient_id):
     if exercises:
         for exercise in exercises:
             exercises_data.append({
-                "patient_id": exercise['patient_id'],  # Assuming 'patient_id' is the correct key
+                "patient_id": exercise['patient_id'],
                 "date": exercise['date'],
                 "repetitions": exercise['repetitions']
             })

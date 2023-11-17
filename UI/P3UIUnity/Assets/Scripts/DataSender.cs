@@ -10,7 +10,7 @@ public class DataSender : MonoBehaviour
     public string getExerciseDataURL = "http://localhost:5000/get_exercise_data/";
     public string saveDataURL = "http://localhost:5000/save_data/";
     public DateUIUpdater dateUIUpdater;
-    private int currentPatientId = -1;
+    public int currentPatientId = -1;
     public TMP_Text time; // Ensure this is linked in the Unity Inspector
 
     [System.Serializable]
@@ -54,7 +54,7 @@ public class DataSender : MonoBehaviour
         {
             patient_id = currentPatientId,
             date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
-            repetitions = 15 // Replace with the actual value from your exercise logic
+            repetitions = 25 // Replace with the actual value from your exercise logic
         };
 
         StartCoroutine(PostRequest(data));
@@ -117,7 +117,6 @@ public class DataSender : MonoBehaviour
             }
         }
     }
-
 
 
     public void OnTimeSliderChanged(Slider slider)
