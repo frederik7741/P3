@@ -71,7 +71,9 @@ while True:
         color_image = image.get_data()
         hsv_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
 
-            # Define the range for yellow color in HSV
+        yellow_centroids = []
+
+        # Define the range for yellow color in HSV
         lower_yellow = np.array([20, 100, 100], dtype=np.uint8)
         upper_yellow = np.array([30, 255, 255], dtype=np.uint8)
 
@@ -91,20 +93,27 @@ while True:
             x, y, w, h = cv2.boundingRect(yellow_contour)
             cv2.rectangle(color_image, (x, y), (x + w, y + h), (0, 255, 255), 2)  # Yellow color, thickness 2
 
+        for yellow_contour in filtered_yellow_contours:
+            x, y, w, h = cv2.boundingRect(yellow_contour)
+            centroid_x = x + w // 2
+            centroid_y = y + h // 2
+            yellow_centroids.append((centroid_x, centroid_y))
+
+
+
             # Connect yellow objects with lines
         for i in range(len(yellow_contours) - 1):
-            x1, y1, _, _ = cv2.boundingRect(yellow_contours[i])
-            x2, y2, _, _ = cv2.boundingRect(yellow_contours[i + 1])
-
-        # Draw a line between consecutive yellow objects
-            cv2.line(color_image, (x1, y1), (x2, y2), (255, 0, 0), 2)  # Blue color, thickness
-
+            if i < len(yellow_centroids) - 1:
+                x1, y1 = yellow_centroids[i]
+                x2, y2 = yellow_centroids[i + 1]
+                cv2.line(color_image, (x1, y1), (x2, y2), (255, 0, 0), 2)  # Blue color, thickness
 
         # Find contours in the foreground mask
+
         contours, _ = cv2.findContours(foreground_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # New shit
-       # color_image_roi = image.get_data()[roi]
+        #color_image_roi = image.get_data()[roi]
         #hsv_image_roi = cv2.cvtColor(color_image_roi, cv2.COLOR_BGR2HSV)
         #yellow_labels_mask = cv2.inRange(hsv_image_roi, lower_Yellow, upper_Yellow)
         #foreground_mask_roi = foreground_mask  # Assuming the depth ROI is the same as the color ROI
@@ -152,6 +161,7 @@ while True:
 
         # Display the segmented depth image
         # cv2.imshow("Segmented Depth", depth_image)
+
 
         #yellow image
         cv2.imshow("Segmented RGB with Tracked Yellow Objects", color_image)
