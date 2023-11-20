@@ -127,9 +127,7 @@ public class GraphManager : MonoBehaviour
         }
         
     }
-
     
-
     private void GenerateNumberIndicators()
     {
         float maxReps = 50f; // Maximum number of repetitions
