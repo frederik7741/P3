@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &15121685
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6860,6 +6860,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   barPrefab: {fileID: 7533119183221878570, guid: 2964c822f90cc0249ab5ef94c2de3980, type: 3}
   graphContainer: {fileID: 740276681}
+  numberIndicatorPrefab: {fileID: 4696787952156234516, guid: 60341a4770102f3439e6a2c1aa4b7ad6, type: 3}
   comparisonButton: {fileID: 1385283416}
 --- !u!114 &1385283416
 MonoBehaviour:
@@ -6916,6 +6917,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 15121684}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1385283417
 MonoBehaviour:
