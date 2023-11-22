@@ -1,39 +1,44 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 
-// Ensure this class is defined in the same namespace as it's used in DataSender
+// This class wraps an array of ExerciseData objects for JSON serialization.
 [System.Serializable]
 public class ExerciseDataWrapper
 {
     public ExerciseData[] exerciseData;
 }
 
+// This class manages the generation and display of a graph based on exercise data.
 public class GraphManager : MonoBehaviour
 {
-    public GameObject barPrefab; // Set this to your bar prefab
-    public RectTransform graphContainer; // Set this to the RectTransform of the parent object in the canvas where bars should be placed
-    public GameObject numberIndicatorPrefab; // Assign this prefab in the Inspector
+    // Prefab for individual bars in the graph.
+    public GameObject barPrefab;
+    // The UI container where the graph bars will be displayed.
+    public RectTransform graphContainer;
+    // Prefab for the number indicators on the side of the graph.
+    public GameObject numberIndicatorPrefab;
+    // Button to trigger graph generation.
     public Button comparisonButton;
-    private bool graphGenerated = false; // Missing variable declaration added
-    private DataSender dataSender; // Reference to the DataSender script
-  
+    // Flag to prevent graph from being generated more than once.
+    private bool graphGenerated = false;
+    // Reference to the DataSender script to access the current patient ID and URLs.
+    private DataSender dataSender;
+
+    // On script start, find the DataSender in the scene and attach the FillGraph method to the comparisonButton click event.
     private void Start()
     {
-        dataSender = FindObjectOfType<DataSender>(); // Find the DataSender in the scene
+        dataSender = FindObjectOfType<DataSender>();
         comparisonButton.onClick.AddListener(FillGraph);
-        
     }
 
+    // Coroutine that fetches exercise data from the database for the given patient ID.
     private IEnumerator FetchExerciseDataFromDatabase(int patientId)
     {
-        // Use the URL from the dataSender
-        string getExerciseDataURL = dataSender.getExerciseDataURL;
-
-        using (UnityWebRequest www = UnityWebRequest.Get(getExerciseDataURL + patientId))
+        using (UnityWebRequest www = UnityWebRequest.Get(dataSender.getExerciseDataURL + patientId))
         {
             yield return www.SendWebRequest();
 
@@ -44,8 +49,6 @@ public class GraphManager : MonoBehaviour
             else
             {
                 string jsonResponse = www.downloadHandler.text;
-                Debug.Log($"Received JSON response: {jsonResponse}");
-
                 ExerciseDataWrapper wrapper = JsonUtility.FromJson<ExerciseDataWrapper>("{\"exerciseData\":" + jsonResponse + "}");
                 if (wrapper != null && wrapper.exerciseData != null)
                 {
@@ -59,19 +62,22 @@ public class GraphManager : MonoBehaviour
             }
         }
     }
+
+    // Method called when the comparison button is clicked. It starts the coroutine to fetch exercise data.
     private void FillGraph()
     {
         if (!graphGenerated && dataSender != null)
         {
-            StartCoroutine(FetchExerciseDataFromDatabase(dataSender.currentPatientId)); // Use the currentPatientId from DataSender
+            StartCoroutine(FetchExerciseDataFromDatabase(dataSender.currentPatientId));
         }
     }
-    
+
+    // Clears any existing bars in the graph.
     private void ClearGraph()
     {
         foreach (Transform child in graphContainer)
         {
-            Destroy(child.gameObject); // Destroy all child objects (bars) of the graph container
+            Destroy(child.gameObject);
         }
     }
 
@@ -82,7 +88,7 @@ public class GraphManager : MonoBehaviour
 
         float containerWidth = graphContainer.rect.width;
         float spacing = 10f; // Adjust spacing between bars
-        float indicatorOffset = 50f; // Adjust this value based on the width of your number indicators
+        float indicatorOffset = 50f; // Adjust this value based on the width of the number indicators
         float barWidth = (containerWidth - indicatorOffset - (spacing * (exerciseDataList.Count + 1))) / exerciseDataList.Count;
         float leftOffset = spacing + indicatorOffset; // Offset from the left side to account for number indicators
         float labelOffset = 20f; // Vertical offset for the label above the bar
@@ -99,7 +105,7 @@ public class GraphManager : MonoBehaviour
             float barPositionX = leftOffset + i * (barWidth + spacing);
             rt.anchoredPosition = new Vector2(barPositionX, 0);
 
-            float heightFactor = Mathf.Clamp01((float)exerciseDataList[i].repetitions / 50f); // Assuming 50 is max reps
+            float heightFactor = Mathf.Clamp01((float)exerciseDataList[i].repetitions / 50f); // 50 is max reps
             rt.sizeDelta = new Vector2(barWidth, heightFactor * graphContainer.rect.height);
                 
             // Instantiate a new TextMeshProUGUI or similar for the label
@@ -107,7 +113,7 @@ public class GraphManager : MonoBehaviour
             label.transform.SetParent(graphContainer);
             // Set the label's RectTransform properties
             RectTransform labelRt = label.GetComponent<RectTransform>();
-            labelRt.sizeDelta = new Vector2(barWidth, 20); // Adjust height as needed
+            labelRt.sizeDelta = new Vector2(barWidth, 20); // Height
             labelRt.anchorMin = new Vector2(0, 0);
             labelRt.anchorMax = new Vector2(0, 0);
             labelRt.pivot = new Vector2(0.5f, 0);
@@ -119,7 +125,7 @@ public class GraphManager : MonoBehaviour
             // Set the exercise name
             TextMeshProUGUI textMesh = label.GetComponent<TextMeshProUGUI>();
             textMesh.alignment = TextAlignmentOptions.Center;
-            textMesh.text = "ØV" + (1); // Assuming you just want to number them
+            textMesh.text = "ØV" + (1); // Name of the excercise
 
             // Set other text properties
             textMesh.fontSize = 10; // Adjust as needed
