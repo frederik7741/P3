@@ -74,16 +74,33 @@ while True:
 
         yellow_centroids = []
 
+        color_image_rgb = cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB)
+
         #Yellow color threshold in HSV values
-        lower_yellow = np.array([25, 130, 130])
-        upper_yellow = np.array([55, 210, 200])
+        lower_yellow = np.array([20, 100, 100])
+        upper_yellow = np.array([30, 255, 255])
 
-            # Create a mask for yellow color
+        #yellow color threshold in rgb values
+        #lower_yellow = np.array([255, 255, 0], dtype="uint8")
+        #upper_yellow = np.array([217, 217, 128], dtype="uint8")
+
+        # Convert HSV to RGB for visualization
+        #lower_yellow_rgb = cv2.cvtColor(np.uint8([[lower_yellow]]), cv2.COLOR_HSV2RGB)[0][0]
+        #upper_yellow_rgb = cv2.cvtColor(np.uint8([[upper_yellow]]), cv2.COLOR_HSV2RGB)[0][0]
 
 
 
+        # Create a mask for yellow color
+
+
+        #cv2.imshow("HSV Image", hsv_image)
         #yellow_mask = ((depth_image >= min_depth_threshold) & (depth_image <= max_depth_threshold)).astype('uint8')
+
         yellow_mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
+
+        #result_Image = cv2.bitwise_and(color_image_rgb, color_image_rgb, mask= yellow_mask)
+        #cv2.imshow("resulttIamge", result_Image)
+
         cv2.imshow("Yellow mask before", yellow_mask)
         #yellow_mask_roi = yellow_mask[roi]
         #yellow_mask_filter = yellow_mask
@@ -107,7 +124,7 @@ while True:
         cv2.imshow("YELLOW", yellow_mask_filter)
 
         depth_filtered_yellow_mask = np.logical_and(depth_image >= min_depth_threshold, depth_image <= max_depth_threshold)
-        yellow_mask = cv2.bitwise_and(yellow_mask_filter, yellow_mask_filter, mask=depth_filtered_yellow_mask.astype(np.uint8))
+        yellow_mask = cv2.bitwise_and(yellow_mask, yellow_mask, mask=depth_filtered_yellow_mask.astype(np.uint8))
 
         yellow_contours, _ = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -154,19 +171,6 @@ while True:
 
         #contours, _ = cv2.findContours(foreground_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # New shit
-        #color_image_roi = image.get_data()[roi]
-        #hsv_image_roi = cv2.cvtColor(color_image_roi, cv2.COLOR_BGR2HSV)
-        #yellow_labels_mask = cv2.inRange(hsv_image_roi, lower_Yellow, upper_Yellow)
-        #foreground_mask_roi = foreground_mask  # Assuming the depth ROI is the same as the color ROI
-        #combined_mask = cv2.bitwise_and(yellow_labels_mask, foreground_mask_roi)
-        #yellow_contours, _ = cv2.findContours(combined_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-
-        #new Shit
-        # Check if there is at least one contour
-        #if contours and yellow_contours:
-           # for yellow_contour in yellow_contours[0]:
 
             # Find the contour with the maximum area
         #largest_contour = max(contours, key=cv2.contourArea)
@@ -179,9 +183,6 @@ while True:
         #if min_contour_area < cv2.contourArea(largest_contour) < max_contour_area:
             # Create an empty black image with the same size as the RGB image
 
-
-
-
         #else:
             # If the largest contour does not meet the area thresholds, create an empty black image
         #    frame_with_contours = np.zeros_like(image_roi, dtype=np.uint8)
@@ -191,17 +192,6 @@ while True:
 
             # Draw only the largest contour
         #cv2.drawContours(frame_with_contours, [largest_contour], -1, (0, 255, 0), 2)  # Green color, thickness 2
-
-
-
-            #new Shit
-                #print(type(largest_contour), largest_contour.shape)
-                #print(type(yellow_contours), yellow_contours[0][0].shape)
-            #if cv2.pointPolygonTest(largest_contour, tuple(yellow_contour[0][0]), False) > 0:
-            #        x, y, w, h = cv2.boundingRect(yellow_contour)
-            #        cv2.rectangle(image.get_data(), (x, y), (x + w, y + h), (0, 255, 255), 2)  # Yellow color, thickness 2
-
-
 
         # Display the segmented depth image
         # cv2.imshow("Segmented Depth", depth_image)
