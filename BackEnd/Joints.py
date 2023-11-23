@@ -1,7 +1,11 @@
 import numpy as np
 import pyzed.sl as sl
 import math
-from AngleDetection import detected_body
+# from AngleDetection import detected_body
+from YoloBodyDetection import datum
+
+# this is just a freestyle that probably does not work
+detected_body = datum.poseKeypoints
 
 # Custom BODY_38_PARTS
 # Spinal Cord
