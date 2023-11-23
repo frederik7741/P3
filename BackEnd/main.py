@@ -74,9 +74,9 @@ while True:
 
         yellow_centroids = []
 
-        # Define the range for yellow color in HSV
+        #Yellow color threshold in HSV values
         lower_yellow = np.array([25, 130, 130])
-        upper_yellow = np.array([35, 210, 200])
+        upper_yellow = np.array([55, 210, 200])
 
             # Create a mask for yellow color
 
@@ -86,15 +86,16 @@ while True:
         yellow_mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
         cv2.imshow("Yellow mask before", yellow_mask)
         #yellow_mask_roi = yellow_mask[roi]
+        #yellow_mask_filter = yellow_mask
 
-       # yellow_mask_filter = cv2.morphologyEx(yellow_mask, cv2.MORPH_DILATE, kernel3)
+        yellow_mask_filter = cv2.morphologyEx(yellow_mask, cv2.MORPH_ERODE, kernel3)
         #yellow_mask_filter_final = cv2.morphologyEx(yellow_mask_filter, cv2.MORPH_ELLIPSE, kernel3)
         #yellow_mask = cv2.morphologyEx(yellow_mask, cv2.MORPH_ELLIPSE, kernel3)
        # for _ in range(4):
            # yellow_mask_filter2 = cv2.morphologyEx(yellow_mask, cv2.MORPH_DILATE, kernel3)
-        yellow_mask_filter = cv2.morphologyEx(yellow_mask, cv2.MORPH_CLOSE, kernel3)
+        #yellow_mask_filter = cv2.morphologyEx(yellow_mask, cv2.MORPH_CLOSE, kernel3)
 
-    #yellow_mask = cv2.morphologyEx(yellow_mask, cv2.MORPH_ELLIPSE, kernel3)
+        #yellow_mask = cv2.morphologyEx(yellow_mask, cv2.MORPH_ELLIPSE, kernel3)
        #or _ in range(4):
        # yellow_mask_filter = cv2.morphologyEx(yellow_mask_filter2, cv2.MORPH_CLOSE, kernel3)
 
@@ -102,6 +103,8 @@ while True:
         #yellow_mask = cv2.morphologyEx(yellow_mask, cv2.MORPH_CLOSE, kernel)
 
         #combined_mask = cv2.bitwise_and(foreground_mask, yellow_mask_roi)
+
+        cv2.imshow("YELLOW", yellow_mask_filter)
 
         depth_filtered_yellow_mask = np.logical_and(depth_image >= min_depth_threshold, depth_image <= max_depth_threshold)
         yellow_mask = cv2.bitwise_and(yellow_mask_filter, yellow_mask_filter, mask=depth_filtered_yellow_mask.astype(np.uint8))
@@ -117,7 +120,7 @@ while True:
         for yellow_contour in yellow_contours:
             area = cv2.contourArea(yellow_contour)
             if min_blob_area <= area <= max_blob_area:
-                bloobers.append(yellow_contours)
+                bloobers.append(yellow_contour)
 
         pruned_mask = np.zeros_like(yellow_mask)
         cv2.drawContours(pruned_mask, bloobers, -1, 255, thickness=cv2.FILLED)
