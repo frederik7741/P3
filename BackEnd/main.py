@@ -15,7 +15,7 @@ if not zed.is_opened():
         exit()
 
 # Background subtraction parameters
-min_depth_threshold = 500  # Minimum depth threshold for 1 meter (in millimeters)
+min_depth_threshold = 1000  # Minimum depth threshold for 1 meter (in millimeters)
 max_depth_threshold = 2000  # Maximum depth threshold for 2 meters (in millimeters)
 
 min_contour_area = 100  # Adjust this threshold as needed
@@ -77,8 +77,8 @@ while True:
         color_image_rgb = cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB)
 
         #Yellow color threshold in HSV values
-        lower_yellow = np.array([20, 100, 100])
-        upper_yellow = np.array([30, 255, 255])
+        lower_yellow = np.array([20, 90, 180])
+        upper_yellow = np.array([50, 255, 255])
 
         #yellow color threshold in rgb values
         #lower_yellow = np.array([255, 255, 0], dtype="uint8")
@@ -105,9 +105,10 @@ while True:
         #yellow_mask_roi = yellow_mask[roi]
         #yellow_mask_filter = yellow_mask
 
-        yellow_mask_filter = cv2.morphologyEx(yellow_mask, cv2.MORPH_ERODE, kernel3)
+        #filter for making yellow stuff be together
+        yellow_mask = cv2.morphologyEx(yellow_mask, cv2.MORPH_ELLIPSE, kernel3)
+        yellow_mask_filter = cv2.morphologyEx(yellow_mask, cv2.MORPH_DILATE, kernel3)
         #yellow_mask_filter_final = cv2.morphologyEx(yellow_mask_filter, cv2.MORPH_ELLIPSE, kernel3)
-        #yellow_mask = cv2.morphologyEx(yellow_mask, cv2.MORPH_ELLIPSE, kernel3)
        # for _ in range(4):
            # yellow_mask_filter2 = cv2.morphologyEx(yellow_mask, cv2.MORPH_DILATE, kernel3)
         #yellow_mask_filter = cv2.morphologyEx(yellow_mask, cv2.MORPH_CLOSE, kernel3)
@@ -124,12 +125,14 @@ while True:
         cv2.imshow("YELLOW", yellow_mask_filter)
 
         depth_filtered_yellow_mask = np.logical_and(depth_image >= min_depth_threshold, depth_image <= max_depth_threshold)
-        yellow_mask = cv2.bitwise_and(yellow_mask, yellow_mask, mask=depth_filtered_yellow_mask.astype(np.uint8))
+        #yellow_mask = cv2.bitwise_and(yellow_mask_filter, yellow_mask_filter, mask=depth_filtered_yellow_mask.astype(np.uint8))
+        cv2.imshow("YELLOW2", yellow_mask)
+
 
         yellow_contours, _ = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 
-        min_blob_area = 30
+        min_blob_area = 1
         max_blob_area = 100
 
         bloobers = []
@@ -149,7 +152,7 @@ while True:
         # Draw rectangles around the detected yellow objects
         for yellow_contour in filtered_yellow_contours:
             x, y, w, h = cv2.boundingRect(yellow_contour)
-            cv2.rectangle(color_image, (x, y), (x + w, y + h), (0, 255, 255), 2)  # Yellow color, thickness 2
+            cv2.rectangle(yellow_mask, (x, y), (x + w, y + h), (0, 255, 255), 2)  # Yellow color, thickness 2
 
         for yellow_contour in filtered_yellow_contours:
             x, y, w, h = cv2.boundingRect(yellow_contour)
@@ -162,7 +165,7 @@ while True:
             if i < len(yellow_centroids) - 1:
                 x1, y1 = yellow_centroids[i]
                 x2, y2 = yellow_centroids[i + 1]
-                cv2.line(color_image, (x1, y1), (x2, y2), (255, 0, 0), 2)  # Blue color, thickness
+                cv2.line(yellow_mask, (x1, y1), (x2, y2), (255, 0, 0), 2)  # Blue color, thickness
 
         #yellow_mask_colored = cv2.cvtColor(yellow_mask_roi, cv2.COLOR_GRAY2BGR)
         #result_image = cv2.addWeighted(color_image_roi, 1, yellow_mask_colored, 0.5, 0)
