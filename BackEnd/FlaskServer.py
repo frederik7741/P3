@@ -15,6 +15,10 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row  # This allows for dictionary-like access to the database rows.
     return conn
 
+@app.before_first_request
+def initialize_database():
+    init_db()
+
 # Initializes the database with the necessary tables if they do not already exist.
 def init_db():
     with app.app_context():
