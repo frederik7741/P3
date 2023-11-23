@@ -1,10 +1,9 @@
-# I revamped this code from ChatGPT
 import cv2
 import torch  # need to install torch
-from yolov5.models.experimental import attempt_load  # need to download the YOLOv5 GitHub Repo
-from yolov5.utils.general import non_max_suppression, scale_coords  # need to download the YOLOv5 GitHub Repo
-from yolov5.utils.torch_utils import select_device  # need to download the YOLOv5 GitHub Repo
-from openpose import pyopenpose as op  # need to download the OpenPose GitHub Repo
+from libs.yolov5.models.experimental import attempt_load  # YOLOv5 GitHub Repo in "libs" folder
+from libs.yolov5.utils.general import non_max_suppression, scale_coords  # YOLOv5 GitHub Repo in "libs" folder
+from libs.yolov5.utils.torch_utils import select_device  # YOLOv5 GitHub Repo in "libs" folder
+from libs.openpose import pyopenpose as op  # OpenPose GitHub Repo in "libs" folder
 
 # Load YOLOv8 model
 device = select_device('')
@@ -13,7 +12,7 @@ stride = int(model.stride.max())
 
 # Configure OpenPose
 params = {
-    "model_folder": "path/to/openpose/models/",
+    "model_folder": "BackEnd/libs/openpose-master/models/",
     "hand": False,
     "face": False,
     "number_people_max": 1
@@ -24,7 +23,7 @@ opWrapper.configure(params)
 opWrapper.start()
 
 # Set ZED2 camera parameters
-zed = cv2.VideoCapture(0)  # Use the correct camera index if not the default
+zed = cv2.VideoCapture(0)  # Replace with Camera from main
 
 while True:
     ### YOLO STUFF ###
@@ -68,7 +67,7 @@ while True:
     if keypoints is not None and len(keypoints) > 0:
         for point in keypoints:
             x, y = int(point[0]), int(point[1])
-            cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)
+            cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)  # probably thickness higher
 
     # Display the result
     cv2.imshow('Object Detection + Pose Estimation', frame)

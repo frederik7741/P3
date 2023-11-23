@@ -86,3 +86,8 @@ op_right_hip =      find_angle(Bones.op_right_spine, Bones.op_right_upper_leg)
 op_right_knee =     find_angle(Bones.op_right_upper_leg, Bones.op_right_lower_leg)
 op_left_hip =       find_angle(Bones.op_left_spine, Bones.op_left_upper_leg)
 op_left_knee =      find_angle(Bones.op_left_upper_leg, Bones.op_left_lower_leg)
+
+
+op_bone_array = np.array((op_right_neck, op_left_neck, op_right_spine, op_left_spine,
+                          op_right_shoulder, op_right_elbow, op_left_shoulder, op_left_elbow,
+                          op_right_hip, op_right_knee, op_left_hip, op_left_knee))
