@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
 import sqlite3
+import subprocess
+import sys
 
 app = Flask(__name__)
 
@@ -65,6 +67,51 @@ def get_exercise_data(patient_id):
             })
 
     return jsonify(exercises_data), 200
+
+
+@app.route('/start_exercise', methods=['POST'])
+def start_exercise():
+    data = request.get_json()
+    print("Received data from Unity:", data)  # This will print the received data from Unity
+    patient_id = data.get('patient_id')
+    date = data.get('date')
+    exercise_time = data.get('time')  # The exercise time in seconds
+
+    # Add a check to see if exercise_time is not None
+    if exercise_time is None:
+        print("No exercise time provided")
+        return jsonify({"status": "error", "message": "No exercise time provided"}), 400
+
+    print("Exercise time received:", exercise_time)  # This will confirm if the time was received
+
+    # Assuming count_reps.py is your script that counts the reps
+    # and it accepts the exercise time as a command-line argument
+    result = subprocess.run(
+        [sys.executable, r'C:\Users\saiht\UnityProjekter\P3\BackEnd\count_reps.py', '--time', str(exercise_time)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
+    print("STDOUT:", result.stdout)
+    print("STDERR:", result.stderr)
+
+    # Parse the output from your script to get the number of reps
+    # For now, let's assume your script prints the reps count as plain text
+    reps_count = int(result.stdout.strip())
+
+    # Save the exercise data with the reps count
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute(
+        'INSERT INTO exercise_data (patient_id, date, repetitions) VALUES (?, ?, ?)',
+        (patient_id, date, reps_count)
+    )
+    db.commit()
+    db.close()
+
+    return jsonify({"status": "success", "message": "Exercise started", "repetitions": reps_count}), 200
+
+
 
 # Endpoint to save exercise data sent via a POST request.
 @app.route('/save_data/', methods=['POST'])
