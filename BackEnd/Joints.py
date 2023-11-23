@@ -2,6 +2,7 @@ import numpy as np
 import pyzed.sl as sl
 import math
 from AngleDetection import detected_body
+from YoloBodyDetection import datum
 
 # Custom BODY_38_PARTS
 # Spinal Cord
@@ -53,3 +54,34 @@ left_hand_middle = detected_body.get_keypoint(34)
 right_hand_middle = detected_body.get_keypoint(35)
 left_hand_pinky =  detected_body.get_keypoint(36)
 right_hand_pinky = detected_body.get_keypoint(37)
+
+
+# OpenPose Joints
+# this is just a freestyle that probably does not work
+op_body_parts = datum.poseKeypoints
+
+# Spinal Cord
+op_nose =              op_body_parts[0]
+op_neck =              op_body_parts[1]
+
+# Arms
+op_right_shoulder =    op_body_parts[2]
+op_right_elbow =       op_body_parts[3]
+op_right_wrist =       op_body_parts[4]
+op_left_shoulder =     op_body_parts[5]
+op_left_elbow =        op_body_parts[6]
+op_left_wrist =        op_body_parts[7]
+
+# Legs
+op_right_hip =         op_body_parts[8]
+op_right_knee =        op_body_parts[9]
+op_right_ankle =       op_body_parts[10]
+op_left_hip =          op_body_parts[11]
+op_left_knee =         op_body_parts[12]
+op_left_ankle =        op_body_parts[13]
+
+# Face
+op_right_eye =         detected_body_parts[14]
+op_left_eye =          detected_body_parts[15]
+op_right_ear =         detected_body_parts[16]
+op_left_ear =          detected_body_parts[17]

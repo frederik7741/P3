@@ -16,11 +16,11 @@ def find_angle(bone_1, bone_2):
     upper_dot_product = bone_1[0] * bone_2[0] + bone_1[1] * bone_2[1] + bone_1[2] * bone_2[2]
     print(f"Upper product: {upper_dot_product}")
 
-    lower_product = (math.sqrt(bone_1[0] ** 2 + bone_1[1] ** 2 + bone_1[2] ** 2) *
-                     math.sqrt(bone_2[0] ** 2 + bone_2[1] ** 2 + bone_2[2] ** 2))
-    print(f"Lower product: {lower_product}")
+    lower_dot_product = (math.sqrt(bone_1[0] ** 2 + bone_1[1] ** 2 + bone_1[2] ** 2) *
+                         math.sqrt(bone_2[0] ** 2 + bone_2[1] ** 2 + bone_2[2] ** 2))
+    print(f"Lower product: {lower_dot_product}")
 
-    dot_product = upper_dot_product / lower_product
+    dot_product = upper_dot_product / lower_dot_product
     print(f"Dot product: {dot_product}")
 
     angle = math.acos(dot_product) * (180 / math.pi)
