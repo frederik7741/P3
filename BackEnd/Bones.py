@@ -61,3 +61,24 @@ right_hand_thumb =       points_to_bones(Joints.right_wrist, Joints.right_hand_t
 right_hand_index =       points_to_bones(Joints.right_wrist, Joints.right_hand_index)
 right_hand_middle =      points_to_bones(Joints.right_wrist, Joints.right_hand_middle)
 right_hand_pinky =       points_to_bones(Joints.right_wrist, Joints.right_hand_pinky)
+
+
+# OpenPose Bones
+# Spinal Cord
+op_neck =               points_to_bones(Joints.op_nose, Joints.op_neck)
+op_right_spine =        points_to_bones(Joints.op_neck, Joints.op_right_hip)
+op_left_spine =         points_to_bones(Joints.op_neck, Joints.op_left_hip)
+
+# Arms
+op_right_clavicle =     points_to_bones(Joints.op_neck, Joints.op_right_shoulder)
+op_right_upper_arm =    points_to_bones(Joints.op_right_shoulder, Joints.op_right_elbow)
+op_right_lower_arm =    points_to_bones(Joints.op_right_elbow, Joints.op_right_wrist)
+op_left_clavicle =      points_to_bones(Joints.op_neck, Joints.op_left_shoulder)
+op_left_upper_arm =     points_to_bones(Joints.op_left_shoulder, Joints.op_left_elbow)
+op_left_lower_arm =     points_to_bones(Joints.op_left_elbow, Joints.op_left_wrist)
+
+# Legs
+op_right_upper_leg =    points_to_bones(Joints.op_right_hip, Joints.op_right_knee)
+op_right_lower_leg =    points_to_bones(Joints.op_right_knee, Joints.op_right_ankle)
+op_left_upper_leg =     points_to_bones(Joints.op_left_hip, Joints.op_left_knee)
+op_left_lower_leg =     points_to_bones(Joints.op_left_knee, Joints.op_left_ankle)
