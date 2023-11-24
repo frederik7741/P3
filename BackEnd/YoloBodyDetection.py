@@ -1,5 +1,6 @@
 import cv2
 import torch  # need to install torch
+
 from libs.yolov5.models.experimental import attempt_load  # YOLOv5 GitHub Repo in "libs" folder
 from libs.yolov5.utils.general import non_max_suppression, scale_coords  # YOLOv5 GitHub Repo in "libs" folder
 from libs.yolov5.utils.torch_utils import select_device  # YOLOv5 GitHub Repo in "libs" folder
