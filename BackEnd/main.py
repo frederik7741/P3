@@ -4,7 +4,7 @@ import numpy as np
 
 # Create a ZED camera
 init_params = sl.InitParameters()
-init_params.depth_mode = sl.DEPTH_MODE.NEURAL  # Choose the appropriate depth mode
+# init_params.depth_mode = sl.DEPTH_MODE.NEURAL  # Choose the appropriate depth mode
 # init_params.depth_mode = sl.DEPTH_MODE.NEURAL
 
 zed = sl.Camera()
