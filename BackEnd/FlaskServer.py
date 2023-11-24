@@ -4,6 +4,7 @@ from datetime import datetime
 import sqlite3
 import subprocess
 import sys
+import os
 
 app = Flask(__name__)
 
@@ -90,8 +91,10 @@ def start_exercise():
 
     # Assuming count_reps.py is your script that counts the reps
     # and it accepts the exercise time as a command-line argument
+    script_path = os.path.join(os.path.dirname(__file__), 'count_reps.py')
+
     result = subprocess.run(
-        [sys.executable, r'C:\Users\saiht\UnityProjekter\P3\BackEnd\count_reps.py', '--time', str(exercise_time)],
+        [sys.executable, script_path, '--time', str(exercise_time)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True
