@@ -3,7 +3,7 @@ import torch  # need to install torch
 from libs.yolov5.models.experimental import attempt_load  # YOLOv5 GitHub Repo in "libs" folder
 from libs.yolov5.utils.general import non_max_suppression, scale_coords  # YOLOv5 GitHub Repo in "libs" folder
 from libs.yolov5.utils.torch_utils import select_device  # YOLOv5 GitHub Repo in "libs" folder
-from libs.openpose import pyopenpose as op  # OpenPose GitHub Repo in "libs" folder
+from openpose import pyopenpose as op  # OpenPose GitHub Repo in "libs" folder
 
 # Load YOLOv8 model
 device = select_device('')
