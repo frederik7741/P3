@@ -14,6 +14,21 @@ if not zed.is_opened():
         print("Failed to open ZED Camera")
         exit()
 
+keypoints = ['Right_Foot', 'Left_Foot', 'Left_Knee', 'Right_Knee', 'Pelvis', 'Left_Hand', 'Right_Hand', 'Right_Elbow', 'Left_Elbow', 'Right_Shoulder', 'Left_Shoulder', 'Chest', 'Head']
+
+#keypoints = ['Head', 'Chest', 'Right_Shoulder','Left_Shoulder', 'Right_Elbow', 'Left_Elbow', 'Right_Hand', 'Left_Hand', 'Pelvis', 'Right_Knee', 'Left_Knee', 'Right_Foot', 'Left_Foot' ]
+
+keypoints_reordered = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+# Define connections between keypoints with labels
+skeleton_connections = [(9, 12, 'Pelvis and Left Knee'), (12, 13, 'Left Knee and Left Foot'),
+                        (9, 10, 'Pelvis and Right Knee'), (10, 11, 'Right Knee and Right Foot'),
+                        (2, 9, 'Chest and Pelvis'),
+                        (6, 7, 'Left Shoulder and Left Elbow'), (7, 8, 'Left Elbow and Left Hand'),
+                        (3, 4, 'Right Shoulder and Right Elbow'), (4, 5, 'Right Elbow and Right Hand'),
+                        (2, 3, 'Chest and Right Shoulder'), (2, 6, 'Chest and Left Shoulder'),
+                        (1, 2, 'Head and Chest')]
+
 
 while True:
     # Capture a frame from the ZED camera
@@ -79,13 +94,33 @@ while True:
             centroid_y = y + h // 2
             yellow_centroids.append((centroid_x, centroid_y))
 
-            # Connect yellow objects with lines
-        for i in range(len(yellow_contours) - 1):
-            if i < len(yellow_centroids) - 1:
-                x1, y1 = yellow_centroids[i]
-                x2, y2 = yellow_centroids[i + 1]
-                cv2.line(yellow_mask, (x1, y1), (x2, y2), (255, 0, 0), 2)  # Blue color, thickness
+        yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
 
+        #makes the connections represent a skeleton-ish
+        for connection in skeleton_connections:
+            if len(connection) == 2:
+                keypoint1, keypoint2 = connection
+                label = f'{keypoint1} and {keypoint2}'
+            elif len(connection) == 3:
+                keypoint1, keypoint2, label = connection
+
+            if keypoint1 in keypoints_reordered and keypoint2 in keypoints_reordered:
+                index1 = keypoints_reordered.index(keypoint1)
+                index2 = keypoints_reordered.index(keypoint2)
+
+            if index1 < len(yellow_centroids_sorted) and index2 < len(yellow_centroids_sorted):
+                _, (x1, y1) = yellow_centroids_sorted[index1]
+                _, (x2, y2) = yellow_centroids_sorted[index2]
+
+                for index, (x, y) in yellow_centroids_sorted[:13]:
+                    if 0 <= index < len(keypoints):
+                    # Draw a circle around the yellow object
+                        cv2.circle(yellow_mask, (x, y), 5, (0, 255, 0), -1)  # Green color, filled circle
+
+                    # Add label text
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
+                                    cv2.LINE_AA)
         # yellow image
         cv2.imshow("Segmented RGB with Tracked Yellow Objects", color_image)
 
