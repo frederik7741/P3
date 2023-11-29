@@ -48,5 +48,5 @@ while True:
 
     for angle in important_angles:
         important_angles[index] = angle
-        print(important_angles[index])
+        print(f"important_angles[{index}]: {important_angles[index]}")
         index += 1
