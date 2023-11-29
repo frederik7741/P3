@@ -114,6 +114,7 @@ while True:
                 index2 = keypoints_reordered.index(keypoint2)
 
             if index1 < len(yellow_centroids_sorted) and index2 < len(yellow_centroids_sorted):
+                # _, means that the first variable in the turple is being ignores because we only want the x and y values.
                 _, (x1, y1) = yellow_centroids_sorted[index1]
                 _, (x2, y2) = yellow_centroids_sorted[index2]
 
