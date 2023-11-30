@@ -29,6 +29,21 @@ import ogl_viewer.viewer as gl
 import cv_viewer.tracking_viewer as cv_viewer
 import numpy as np
 import argparse
+import math
+import time
+def calculate_angle(p1, p2, p3):
+    a = np.array(p1)
+    b = np.array(p2)
+    c = np.array(p3)
+
+    radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
+    angle = np.abs(radians*180.0/np.pi)
+
+    if angle > 180.0:
+        angle = 360 - angle
+
+    return angle
+
 
 def parse_args(init):
     if len(opt.input_svo_file)>0 and opt.input_svo_file.endswith(".svo"):
@@ -120,16 +135,45 @@ def main():
     # Create ZED objects filled in the main loop
     bodies = sl.Bodies()
     image = sl.Mat()
-    key_wait = 10 
+    key_wait = 10
+
+    repetition_count = 0
+    is_below_threshold = False
+    angle_threshold = 35  # degrees
+
     while viewer.is_available():
-        # Grab an image
         if zed.grab() == sl.ERROR_CODE.SUCCESS:
-            # Retrieve left image
+            # Retrieve left image and bodies
             zed.retrieve_image(image, sl.VIEW.LEFT, sl.MEM.CPU, display_resolution)
-            # Retrieve bodies
             zed.retrieve_bodies(bodies, body_runtime_param)
-            # Update GL view
-            viewer.update_view(image, bodies) 
+            viewer.update_view(image, bodies)
+
+            # Processing each body
+            for body in bodies.body_list:
+                # Access the keypoints directly from the body object
+                shoulder = body.keypoint[2]  # 3D coordinates for shoulder
+                elbow = body.keypoint[3]  # 3D coordinates for elbow
+                wrist = body.keypoint[4]  # 3D coordinates for wrist
+
+                # Calculate the angle
+                angle = calculate_angle(shoulder, elbow, wrist)
+
+                if not np.isnan(angle):
+                    print("Valid angle between shoulder, elbow, and wrist: ", angle)
+
+                    if not np.isnan(angle):
+                        print("Angle: ", angle)
+                        # Check if the angle is below the threshold
+                        if angle < angle_threshold and not is_below_threshold:
+                            repetition_count += 1
+                            is_below_threshold = True
+                            print("Repetition count: ", repetition_count)
+                        elif angle >= angle_threshold:
+                            is_below_threshold = False
+
+                    # Delay the loop to slow down the output rate
+                    time.sleep(0.5)  # Adjust the sleep duration as needed
+
             # Update OCV view
             image_left_ocv = image.get_data()
             cv_viewer.render_2D(image_left_ocv,image_scale, bodies.body_list, body_param.enable_tracking, body_param.body_format)
@@ -161,4 +205,4 @@ if __name__ == '__main__':
     if len(opt.input_svo_file)>0 and len(opt.ip_address)>0:
         print("Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program")
         exit()
-    main() 
+    main()

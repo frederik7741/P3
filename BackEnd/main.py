@@ -17,10 +17,10 @@ if not zed.is_opened():
         exit()
 
 # Defines the keypoints of the skeleton
-keypoints = ['Right_Foot', 'Left_Foot', 'Left_Knee', 'Right_Knee', 'Pelvis', 'Left_Hand', 'Right_Hand', 'Right_Elbow', 'Left_Elbow', 'Right_Shoulder', 'Left_Shoulder', 'Chest', 'Head']
+keypoints = ['Right_Foot', 'Left_Foot', 'Left_Knee', 'Right_Knee', 'Pelvis', 'Left_Hand', 'Right_Hand', 'Right_Elbow', 'Left_Elbow', 'Right_Shoulder', 'Left_Shoulder', 'Chest']
 
 # Orders the keypoints so that the head is ontop and the feet are at the bottom
-keypoints_reordered = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+keypoints_reordered = [ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 # Define connections between keypoints with labels
 skeleton_connections = [(9, 12, 'Pelvis and Left Knee'), (12, 13, 'Left Knee and Left Foot'),
@@ -66,7 +66,8 @@ while True:
 
         # The yellow/orange color thresholds area are detected based on size
         # if this line gives error write: _ , yellow_contours, _ = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        yellow_contours, _ = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        _, yellow_contours, hierarchy = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
 
         # Doesn't do shit, but cant remove or else it wont work
         min_blob_area = 90
