@@ -3,27 +3,78 @@ import pyzed.sl as sl
 import math
 # from AngleDetection import detected_body
 # from YoloBodyDetection import datum
-from main import yellow_centroids_sorted
+from main import yellow_centroids_sorted  # importer keypoints fra kameraet
 
-# ZED Keypoints
-index, body_part = yellow_centroids_sorted
+x = 0.0
+y = 0.0
+z = 0.0
+# yellow_centroids_sorted = np.zeros((13, 3)) # slet den her linje (brugt til test)
 
-head = yellow_centroids_sorted[0]
-chest = yellow_centroids_sorted[1]
+head = 0.0, 0.0, 0.0
+chest = 0.0, 0.0, 0.0
 
-right_shoulder = yellow_centroids_sorted[2]
-right_elbow = yellow_centroids_sorted[3]
-right_hand = yellow_centroids_sorted[4]
-left_shoulder = yellow_centroids_sorted[5]
-left_elbow = yellow_centroids_sorted[6]
-left_hand = yellow_centroids_sorted[7]
+right_shoulder = 0.0, 0.0, 0.0
+right_elbow = 0.0, 0.0, 0.0
+right_hand = 0.0, 0.0, 0.0
+left_shoulder = 0.0, 0.0, 0.0
+left_elbow = 0.0, 0.0, 0.0
+left_hand = 0.0, 0.0, 0.0
 
-pelvis = yellow_centroids_sorted[8]
+pelvis = 0.0, 0.0, 0.0
 
-right_knee = yellow_centroids_sorted[9]
-right_foot = yellow_centroids_sorted[10]
-left_knee = yellow_centroids_sorted[11]
-left_foot = yellow_centroids_sorted[12]
+right_knee = 0.0, 0.0, 0.0
+right_foot = 0.0, 0.0, 0.0
+left_knee = 0.0, 0.0, 0.0
+left_foot = 0.0, 0.0, 0.0
+
+joints_list = [head, chest,
+              right_shoulder, right_elbow, right_hand,
+              left_shoulder, left_elbow, left_hand,
+              pelvis,
+              right_knee, right_foot,
+              left_knee, left_foot]
+
+
+def random_coord():
+    x = random_point()
+    y = random_point()
+    z = random_point()
+    return x, y, z
+
+def random_point():
+    return np.random.uniform(0, 90)
+
+def get_joints_list():
+    return joints_list
+
+
+def update_joints():
+    test_index = 0
+    for joints in range(13):
+        # yellow_centroids_sorted[test_index] = random_coord()  # slet den her linje (brugt til test)
+        joints_list[test_index] = yellow_centroids_sorted[test_index]
+        # print(f"{test_index}: {joints_list[test_index]}")
+        test_index += 1
+
+    # # ZED Keypoints
+    # # index, body_part = yellow_centroids_sorted
+    #
+    # head = yellow_centroids_sorted[0]
+    # chest = yellow_centroids_sorted[1]
+    #
+    # right_shoulder = yellow_centroids_sorted[2]
+    # right_elbow = yellow_centroids_sorted[3]
+    # right_hand = yellow_centroids_sorted[4]
+    # left_shoulder = yellow_centroids_sorted[5]
+    # left_elbow = yellow_centroids_sorted[6]
+    # left_hand = yellow_centroids_sorted[7]
+    #
+    # pelvis = yellow_centroids_sorted[8]
+    #
+    # right_knee = yellow_centroids_sorted[9]
+    # right_foot = yellow_centroids_sorted[10]
+    # left_knee = yellow_centroids_sorted[11]
+    # left_foot = yellow_centroids_sorted[12]
 
 
 # # Custom BODY_38_PARTS

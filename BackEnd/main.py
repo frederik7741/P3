@@ -2,6 +2,7 @@
 import pyzed.sl as sl
 import cv2
 import numpy as np
+from Exercises import get_exercise_angles
 
 # Create a ZED camera
 init_params = sl.InitParameters()
@@ -127,6 +128,9 @@ while True:
                         font = cv2.FONT_HERSHEY_SIMPLEX
                         cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
                                     cv2.LINE_AA)
+
+        Exercises.get_exercise_angles()
+
         # Shows the raw image of the camera
         cv2.imshow("Segmented RGB with Tracked Yellow Objects", color_image)
 

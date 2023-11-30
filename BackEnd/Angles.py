@@ -4,6 +4,84 @@ import math
 import Bones
 from AngleDetection import find_angle
 
+neck = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+
+right_shoulder = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+right_elbow = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+
+left_shoulder = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+left_elbow = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+
+right_hip = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+right_knee = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+
+left_hip = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+left_knee = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+
+angles_list = [neck,
+              right_shoulder, right_elbow,
+              left_shoulder, left_elbow,
+              right_hip, right_knee,
+              left_hip, left_knee]
+
+angle_names = ["neck",
+              "right_shoulder", "right_elbow",
+              "left_shoulder", "left_elbow",
+              "right_hip", "right_knee",
+              "left_hip", "left_knee"]
+
+def get_angles_list():
+    return angles_list
+
+def update_angles():
+    Bones.update_bones()
+    bones_list = Bones.get_bones_list()
+
+    angles_list[0] = find_angle(bones_list[0], bones_list[7])
+
+    angles_list[1] = find_angle(bones_list[1], bones_list[2])
+    angles_list[2] = find_angle(bones_list[2], bones_list[3])
+
+    angles_list[3] = find_angle(bones_list[4], bones_list[5])
+    angles_list[4] = find_angle(bones_list[5], bones_list[6])
+
+    angles_list[5] = find_angle(bones_list[7], bones_list[8])
+    angles_list[6] = find_angle(bones_list[8], bones_list[9])
+
+    angles_list[7] = find_angle(bones_list[7], bones_list[10])
+    angles_list[8] = find_angle(bones_list[10], bones_list[11])
+
+    # test_index = 0
+    #
+    # for angle in angle_list:
+    #     print(f"{angle_names[test_index]}: {angles_list[test_index]}")
+    #     test_index += 1
+
+# # ZED Keypoints
+# neck = find_angle(Bones.neck, Bones.spine)
+#
+# right_shoulder = find_angle(Bones.right_clavicle, Bones.right_upper_arm)
+# right_elbow = find_angle(Bones.right_upper_arm, Bones.right_lower_arm)
+# left_shoulder = find_angle(Bones.left_clavicle, Bones.left_upper_arm)
+# left_elbow = find_angle(Bones.left_upper_arm, Bones.left_lower_arm)
+#
+# right_hip = find_angle(Bones.spine, Bones.right_upper_leg)
+# right_knee = find_angle(Bones.right_upper_leg, Bones.right_lower_leg)
+# left_hip = find_angle(Bones.spine, Bones.left_upper_leg)
+# left_knee = find_angle(Bones.left_upper_leg, Bones.left_lower_leg)
+#
+# zed_bone_array = np.array[neck,
+#                            right_shoulder, right_elbow,
+#                            left_shoulder, left_elbow,
+#                            right_hip, right_knee,
+#                            left_hip, left_knee]
+#
+# for angle in zed_bone_array:
+#     i = 0
+#     print(f"Bone {i}: {angle}")
+#     i += 1
+
+
 # # Predefining angles
 # # Spinal Cord
 # pelvis_left_hip =               find_angle(Bones.lower_spine, Bones.left_hip)
@@ -93,26 +171,3 @@ from AngleDetection import find_angle
 #                           op_right_hip, op_right_knee, op_left_hip, op_left_knee))
 
 
-# ZED Keypoints
-neck = find_angle(Bones.neck, Bones.spine)
-
-right_shoulder = find_angle(Bones.right_clavicle, Bones.right_upper_arm)
-right_elbow = find_angle(Bones.right_upper_arm, Bones.right_lower_arm)
-left_shoulder = find_angle(Bones.left_clavicle, Bones.left_upper_arm)
-left_elbow = find_angle(Bones.left_upper_arm, Bones.left_lower_arm)
-
-right_hip = find_angle(Bones.spine, Bones.right_upper_leg)
-right_knee = find_angle(Bones.right_upper_leg, Bones.right_lower_leg)
-left_hip = find_angle(Bones.spine, Bones.left_upper_leg)
-left_knee = find_angle(Bones.left_upper_leg, Bones.left_lower_leg)
-
-zed_bone_array = np.array((neck,
-                           right_shoulder, right_elbow,
-                           left_shoulder, left_elbow,
-                           right_hip, right_knee,
-                           left_hip, left_knee))
-
-for angle in zed_bone_array:
-    i = 0
-    print(f"Bone {i}: {angle}")
-    i += 1

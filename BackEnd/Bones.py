@@ -4,22 +4,72 @@ import math
 import Joints
 from AngleDetection import points_to_bones
 
+neck = [0.0, 0.0, 0.0]
+
+right_clavicle = [0.0, 0.0, 0.0]
+right_upper_arm = [0.0, 0.0, 0.0]
+right_lower_arm = [0.0, 0.0, 0.0]
+left_clavicle = [0.0, 0.0, 0.0]
+left_upper_arm = [0.0, 0.0, 0.0]
+left_lower_arm = [0.0, 0.0, 0.0]
+
+spine = [0.0, 0.0, 0.0]
+
+right_upper_leg = [0.0, 0.0, 0.0]
+right_lower_leg = [0.0, 0.0, 0.0]
+left_upper_leg = [0.0, 0.0, 0.0]
+left_lower_leg = [0.0, 0.0, 0.0]
+
+bones_list = [neck,
+              right_clavicle, right_upper_arm, right_lower_arm,
+              left_clavicle, left_upper_arm, left_lower_arm,
+              spine,
+              right_upper_leg, right_lower_leg,
+              left_upper_leg, left_lower_leg]
+
+def get_bones_list():
+    return bones_list
+
+def update_bones():
+    Joints.update_joints()
+    joints_list = Joints.get_joints_list()
+
+    # Head
+    bones_list[0] = points_to_bones(joints_list[0], joints_list[1])
+    # Right arm
+    bones_list[1] = points_to_bones(joints_list[1], joints_list[2])
+    bones_list[2] = points_to_bones(joints_list[2], joints_list[3])
+    bones_list[3] = points_to_bones(joints_list[3], joints_list[4])
+    # Left arm
+    bones_list[4] = points_to_bones(joints_list[1], joints_list[5])
+    bones_list[5] = points_to_bones(joints_list[5], joints_list[6])
+    bones_list[6] = points_to_bones(joints_list[6], joints_list[7])
+    # Spine
+    bones_list[7] = points_to_bones(joints_list[1], joints_list[8])
+    # Right leg
+    bones_list[8] = points_to_bones(joints_list[8], joints_list[9])
+    bones_list[9] = points_to_bones(joints_list[9], joints_list[10])
+    # Left leg
+    bones_list[10] = points_to_bones(joints_list[8], joints_list[11])
+    bones_list[11] = points_to_bones(joints_list[11], joints_list[12])
+
+
 # ZED Keypoint
-neck = points_to_bones(Joints.head, Joints.chest)
-
-right_clavicle = points_to_bones(Joints.chest, Joints.right_shoulder)
-right_upper_arm = points_to_bones(Joints.right_shoulder, Joints.right_elbow)
-right_lower_arm = points_to_bones(Joints.right_elbow, Joints.right_hand)
-left_clavicle = points_to_bones(Joints.chest, Joints.left_shoulder)
-left_upper_arm = points_to_bones(Joints.left_shoulder, Joints.left_elbow)
-left_lower_arm = points_to_bones(Joints.left_elbow, Joints.left_hand)
-
-spine = points_to_bones(Joints.chest, Joints.pelvis)
-
-right_upper_leg = points_to_bones(Joints.pelvis, Joints.right_knee)
-right_lower_leg = points_to_bones(Joints.right_knee, Joints.right_foot)
-left_upper_leg = points_to_bones(Joints.pelvis, Joints.left_knee)
-left_lower_leg = points_to_bones(Joints.left_knee, Joints.left_foot)
+# neck = points_to_bones(Joints.head, Joints.chest)
+#
+# right_clavicle = points_to_bones(Joints.chest, Joints.right_shoulder)
+# right_upper_arm = points_to_bones(Joints.right_shoulder, Joints.right_elbow)
+# right_lower_arm = points_to_bones(Joints.right_elbow, Joints.right_hand)
+# left_clavicle = points_to_bones(Joints.chest, Joints.left_shoulder)
+# left_upper_arm = points_to_bones(Joints.left_shoulder, Joints.left_elbow)
+# left_lower_arm = points_to_bones(Joints.left_elbow, Joints.left_hand)
+#
+# spine = points_to_bones(Joints.chest, Joints.pelvis)
+#
+# right_upper_leg = points_to_bones(Joints.pelvis, Joints.right_knee)
+# right_lower_leg = points_to_bones(Joints.right_knee, Joints.right_foot)
+# left_upper_leg = points_to_bones(Joints.pelvis, Joints.left_knee)
+# left_lower_leg = points_to_bones(Joints.left_knee, Joints.left_foot)
 
 
 # # Custom BODY_38_BONES

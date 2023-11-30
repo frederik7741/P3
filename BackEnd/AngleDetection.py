@@ -3,7 +3,7 @@
 import numpy as np
 import pyzed.sl as sl
 import math
-import main
+# import main
 
 def points_to_bones(point_1, point_2):
     bone_vector = [point_2[0] - point_1[0], point_2[1] - point_1[1], point_2[2] - point_1[2]]
@@ -14,17 +14,17 @@ def points_to_bones(point_1, point_2):
 
 def find_angle(bone_1, bone_2):
     upper_dot_product = bone_1[0] * bone_2[0] + bone_1[1] * bone_2[1] + bone_1[2] * bone_2[2]
-    print(f"Upper product: {upper_dot_product}")
+    # print(f"Upper product: {upper_dot_product}")
 
     lower_dot_product = (math.sqrt(bone_1[0] ** 2 + bone_1[1] ** 2 + bone_1[2] ** 2) *
                          math.sqrt(bone_2[0] ** 2 + bone_2[1] ** 2 + bone_2[2] ** 2))
-    print(f"Lower product: {lower_dot_product}")
+    # print(f"Lower product: {lower_dot_product}")  # this part is not a dot product, but whatever its just simplification
 
     dot_product = upper_dot_product / lower_dot_product
-    print(f"Dot product: {dot_product}")
+    # print(f"Dot product: {dot_product}")
 
     angle = math.acos(dot_product) * (180 / math.pi)
-    return angle
+    return angle  # if this angle is not between 0 - 180, something is very wrong
 
 
 #detected_body = bodies.get_first_body_2d_image()
