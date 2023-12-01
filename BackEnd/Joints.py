@@ -2,7 +2,7 @@ import numpy as np
 import math
 # from AngleDetection import detected_body
 # from YoloBodyDetection import datum
-from main import yellow_centroids_sorted  # importer keypoints fra kameraet
+# from main import yellow_centroids_sorted  # importer keypoints fra kameraet
 
 x = 0.0
 y = 0.0
@@ -46,6 +46,11 @@ def random_point():
 def get_joints_list():
     return joints_list
 
+def set_joints_list(keypoint_list):
+    index = 0
+    for keypoint in keypoint_list:
+        joints_list[index] = keypoint
+        index += 1
 
 def update_joints():
     test_index = 0

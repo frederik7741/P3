@@ -2,7 +2,9 @@
 import pyzed.sl as sl
 import cv2
 import numpy as np
-from Exercises import get_exercise_angles
+import Joints
+# from Exercises import get_exercise_angles
+import Exercises
 
 # Create a ZED camera
 init_params = sl.InitParameters()
@@ -129,6 +131,7 @@ while True:
                         cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
                                     cv2.LINE_AA)
 
+        Joints.set_joints_list(yellow_centroids_sorted)
         Exercises.get_exercise_angles()
 
         # Shows the raw image of the camera

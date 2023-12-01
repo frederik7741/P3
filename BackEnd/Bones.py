@@ -30,7 +30,7 @@ def get_bones_list():
     return bones_list
 
 def update_bones():
-    Joints.update_joints()
+    # Joints.update_joints()
     joints_list = Joints.get_joints_list()
 
     # Head

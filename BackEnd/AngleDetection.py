@@ -14,7 +14,7 @@ def points_to_bones(point_1, point_2):
 def find_angle(bone_1, bone_2):
     upper_dot_product = bone_1[0] * bone_2[0] + bone_1[1] * bone_2[1]  # + bone_1[2] * bone_2[2]
     # print(f"Upper product: {upper_dot_product}")
-
+                                        # ** 2 = ^2
     lower_dot_product = (math.sqrt(bone_1[0] ** 2 + bone_1[1] ** 2) *  #  + bone_1[2] ** 2
                          math.sqrt(bone_2[0] ** 2 + bone_2[1] ** 2))   #  + bone_2[2] ** 2
     # print(f"Lower product: {lower_dot_product}")  # this part is not a dot product, but whatever its just simplification
