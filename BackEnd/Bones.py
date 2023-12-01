@@ -1,5 +1,4 @@
 import numpy as np
-import pyzed.sl as sl
 import math
 import Joints
 from AngleDetection import points_to_bones

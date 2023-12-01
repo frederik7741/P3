@@ -1,5 +1,4 @@
 import numpy as np
-import pyzed.sl as sl
 import math
 # from AngleDetection import detected_body
 # from YoloBodyDetection import datum

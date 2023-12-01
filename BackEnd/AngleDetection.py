@@ -1,7 +1,6 @@
 # for at regne vinklerne mellem led, definerer vi leddene som en 3D vektor og finder vinklen derimellem
 
 import numpy as np
-import pyzed.sl as sl
 import math
 # import main
 
