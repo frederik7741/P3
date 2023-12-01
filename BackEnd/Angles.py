@@ -1,5 +1,4 @@
 import numpy as np
-import pyzed.sl as sl
 import math
 import Bones
 from AngleDetection import find_angle
