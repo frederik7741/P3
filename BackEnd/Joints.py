@@ -9,22 +9,22 @@ y = 0.0
 z = 0.0
 # yellow_centroids_sorted = np.zeros((13, 2)) # slet den her linje (brugt til test)
 
-head = 0.0, 0.0
-chest = 0.0, 0.0
+head = 0, 0
+chest = 0, 0
 
-right_shoulder = 0.0, 0.0
-right_elbow = 0.0, 0.0
-right_hand = 0.0, 0.0
-left_shoulder = 0.0, 0.0
-left_elbow = 0.0, 0.0
-left_hand = 0.0, 0.0
+right_shoulder = 0, 0
+right_elbow = 0, 0
+right_hand = 0, 0
+left_shoulder = 0, 0
+left_elbow = 0, 0
+left_hand = 0, 0
 
-pelvis = 0.0, 0.0
+pelvis = 0, 0
 
-right_knee = 0.0, 0.0
-right_foot = 0.0, 0.0
-left_knee = 0.0, 0.0
-left_foot = 0.0, 0.0
+right_knee = 0, 0
+right_foot = 0, 0
+left_knee = 0, 0
+left_foot = 0, 0
 
 joints_list = [head, chest,
               right_shoulder, right_elbow, right_hand,
