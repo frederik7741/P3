@@ -6,18 +6,18 @@ import math
 # import main
 
 def points_to_bones(point_1, point_2):
-    bone_vector = [point_2[0] - point_1[0], point_2[1] - point_1[1], point_2[2] - point_1[2]]
+    bone_vector = [point_2[0] - point_1[0], point_2[1] - point_1[1]]  # , point_2[2] - point_1[2]
     #bone_origin = point_1
     #bone = bone_length, bone_origin
     return bone_vector
 
 
 def find_angle(bone_1, bone_2):
-    upper_dot_product = bone_1[0] * bone_2[0] + bone_1[1] * bone_2[1] + bone_1[2] * bone_2[2]
+    upper_dot_product = bone_1[0] * bone_2[0] + bone_1[1] * bone_2[1]  # + bone_1[2] * bone_2[2]
     # print(f"Upper product: {upper_dot_product}")
 
-    lower_dot_product = (math.sqrt(bone_1[0] ** 2 + bone_1[1] ** 2 + bone_1[2] ** 2) *
-                         math.sqrt(bone_2[0] ** 2 + bone_2[1] ** 2 + bone_2[2] ** 2))
+    lower_dot_product = (math.sqrt(bone_1[0] ** 2 + bone_1[1] ** 2) *  #  + bone_1[2] ** 2
+                         math.sqrt(bone_2[0] ** 2 + bone_2[1] ** 2))   #  + bone_2[2] ** 2
     # print(f"Lower product: {lower_dot_product}")  # this part is not a dot product, but whatever its just simplification
 
     dot_product = upper_dot_product / lower_dot_product
