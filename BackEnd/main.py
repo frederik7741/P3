@@ -4,7 +4,7 @@ import Joints
 import Exercises
 
 # Create a VideoCapture object for the camera (0 for default camera)
-cap = cv2.VideoCapture(3)
+cap = cv2.VideoCapture(2)
 
 # Check if the camera opened successfully
 if not cap.isOpened():
