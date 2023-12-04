@@ -133,7 +133,8 @@ while True:
     cv2.imshow("Tracking of Skeleton", yellow_mask)
 
     # Press 'q' to exit the loop
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('q'):
         break
     elif key == ord('s'):  # Press 's' to stop tracking
         tracking_enabled = False
