@@ -23,6 +23,8 @@ skeleton_connections = [(1, 2, 'Hand and Elbow'), (2, 3, 'Elbow and Shoulder')]
 
 tracking_enabled = True
 
+freeze_keypoints = False
+
 while True:
     # Capture a frame from the camera
     ret, color_image = cap.read()
@@ -83,18 +85,12 @@ while True:
         x, y, w, h = cv2.boundingRect(yellow_contour)
         cv2.rectangle(yellow_mask, (x, y), (x + w, y + h), (0, 255, 255), 5)  # Yellow color, thickness 2
 
-    # Calculates the center of the remaining yellow contours and stores them in the yellow_centroids list
-    for yellow_contour in filtered_yellow_contours:
-        x, y, w, h = cv2.boundingRect(yellow_contour)
-        centroid_x = x + w // 2
-        centroid_y = y + h // 2
-        yellow_centroids.append((centroid_x, centroid_y))
 
-    if tracking_enabled:
-        # Sorts the yellow centroids by the y coordinates
+
+    if tracking_enabled and not freeze_keypoints:
         yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
 
-        # makes the connections represent a skeleton-ish only if tracking is enabled
+    # makes the connections represent a skeleton-ish only if tracking is enabled
     if tracking_enabled:
         # makes the connections represent a skeleton-ish
         for connection in skeleton_connections:
@@ -123,6 +119,15 @@ while True:
                     cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
                                 cv2.LINE_AA)
 
+     # Calculates the center of the remaining yellow contours and stores them in the yellow_centroids list
+    if tracking_enabled and not freeze_keypoints:
+        yellow_centroids = []
+        for yellow_contour in filtered_yellow_contours:
+            x, y, w, h = cv2.boundingRect(yellow_contour)
+            centroid_x = x + w // 2
+            centroid_y = y + h // 2
+            yellow_centroids.append((centroid_x, centroid_y))
+
     Joints.set_joints_list(yellow_centroids_sorted)
     Exercises.get_exercise_angles()
 
@@ -136,8 +141,8 @@ while True:
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
-    elif key == ord('s'):  # Press 's' to stop tracking
-        tracking_enabled = False
+    elif key == ord('s'):  # Press 's' to stop updating keypoints
+        freeze_keypoints = not freeze_keypoints
 
 # Release the camera and close OpenCV windows
 cap.release()
