@@ -88,10 +88,18 @@ while True:
         x, y, w, h = cv2.boundingRect(yellow_contour)
         cv2.rectangle(yellow_mask, (x, y), (x + w, y + h), (0, 255, 255), 5)  # Yellow color, thickness 2
 
+        # Store the initial positions of the keypoints if not frozen
     if not freeze_keypoints:
         initial_keypoints_positions = yellow_centroids.copy()
+        # Clear the existing centroid_labels dictionary when initializing
+        centroid_labels = {}
 
-        # Calculates the center of the remaining yellow contours and stores them in the yellow_centroids list
+        # Assign labels based on the initial positions
+        for index, (x, y) in enumerate(initial_keypoints_positions):
+            if 0 <= index < len(keypoints):
+                centroid_labels[(x, y)] = keypoints[index]
+
+            # Calculate the center of the remaining yellow contours and stores them in the yellow_centroids list
     if tracking_enabled and not freeze_keypoints:
         yellow_centroids = []
         for yellow_contour in filtered_yellow_contours:
@@ -100,9 +108,13 @@ while True:
             centroid_y = y + h // 2
             yellow_centroids.append((centroid_x, centroid_y))
 
-    # Sorts the yellow centroids by the y coordinates only if tracking is enabled and keypoints can be updated
+        # Sorts the yellow centroids by the y coordinates only if tracking is enabled and keypoints can be updated
     if tracking_enabled and not freeze_keypoints:
         yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
+
+    # Calculate the center of the remaining yellow contours based on the initial positions if not frozen
+    if tracking_enabled and not freeze_keypoints:
+        yellow_centroids = initial_keypoints_positions.copy()
 
     # makes the connections represent a skeleton-ish only if tracking is enabled
     if tracking_enabled:
@@ -123,16 +135,17 @@ while True:
             _, (x1, y1) = yellow_centroids_sorted[index1]
             _, (x2, y2) = yellow_centroids_sorted[index2]
 
-            for index, (x, y) in yellow_centroids_sorted[:13]:
-                if 0 <= index < len(keypoints):
-                    # Draw a circle around the yellow object
-                    cv2.circle(yellow_mask, (x, y), 5, (0, 255, 0), -1)  # Green color, filled circle
+            if tracking_enabled:
+                for index, (x, y) in yellow_centroids_sorted:
+                    if 0 <= index < len(keypoints):
+                        cv2.circle(yellow_mask, (x, y), 5, (0, 255, 0), -1)  # Green color, filled circle
 
-                    # Add label text
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-                    cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
-                                cv2.LINE_AA)
-        # Calculate the center of the remaining yellow contours based on the initial positions if not frozen
+                        # Add label text
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
+                                    cv2.LINE_AA)
+
+    # Calculate the center of the remaining yellow contours based on the initial positions if not frozen
     if tracking_enabled and not freeze_keypoints:
         yellow_centroids = initial_keypoints_positions.copy()
 
@@ -143,9 +156,10 @@ while True:
     cv2.imshow("Segmented RGB with Tracked Yellow Objects", color_image)
 
     # Shows the yellow masks with the yellow centroids
-    cv2.imshow("Tracking of Skeleton", yellow_mask)
+    if tracking_enabled:
+        cv2.imshow("Tracking of Skeleton", yellow_mask)
 
-    # Press 'q' to exit the loop
+        # Press 'q' to exit the loop
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
