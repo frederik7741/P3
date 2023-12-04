@@ -12,20 +12,16 @@ if not cap.isOpened():
     exit()
 
 # Defines the keypoints of the skeleton
-keypoints = ['Right_Foot', 'Left_Foot', 'Left_Knee', 'Right_Knee', 'Pelvis', 'Left_Hand', 'Right_Hand', 'Right_Elbow',
-             'Left_Elbow', 'Right_Shoulder', 'Left_Shoulder', 'Chest', 'Head']
+keypoints = ['Hands', 'Elbows', 'Shoulder']
 
 # Orders the keypoints so that the head is on top and the feet are at the bottom
-keypoints_reordered = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+keypoints_reordered = [1, 2, 3]
+
 
 # Define connections between keypoints with labels
-skeleton_connections = [(9, 12, 'Pelvis and Left Knee'), (12, 13, 'Left Knee and Left Foot'),
-                        (9, 10, 'Pelvis and Right Knee'), (10, 11, 'Right Knee and Right Foot'),
-                        (2, 9, 'Chest and Pelvis'),
-                        (6, 7, 'Left Shoulder and Left Elbow'), (7, 8, 'Left Elbow and Left Hand'),
-                        (3, 4, 'Right Shoulder and Right Elbow'), (4, 5, 'Right Elbow and Right Hand'),
-                        (2, 3, 'Chest and Right Shoulder'), (2, 6, 'Chest and Left Shoulder'),
-                        (1, 2, 'Head and Chest')]
+skeleton_connections = [(1, 2, 'Hand and Elbow'), (2, 3, 'Elbow and Shoulder')]
+
+tracking_enabled = True
 
 while True:
     # Capture a frame from the camera
@@ -94,16 +90,19 @@ while True:
         centroid_y = y + h // 2
         yellow_centroids.append((centroid_x, centroid_y))
 
-    # Sorts the yellow centroids by the y coordinates
-    yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
+    if tracking_enabled:
+        # Sorts the yellow centroids by the y coordinates
+        yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
 
-    # makes the connections represent a skeleton-ish
-    for connection in skeleton_connections:
-        if len(connection) == 2:
-            keypoint1, keypoint2 = connection
-            label = f'{keypoint1} and {keypoint2}'
-        elif len(connection) == 3:
-            keypoint1, keypoint2, label = connection
+        # makes the connections represent a skeleton-ish only if tracking is enabled
+    if tracking_enabled:
+        # makes the connections represent a skeleton-ish
+        for connection in skeleton_connections:
+            if len(connection) == 2:
+                keypoint1, keypoint2 = connection
+                label = f'{keypoint1} and {keypoint2}'
+            elif len(connection) == 3:
+                keypoint1, keypoint2, label = connection
 
         if keypoint1 in keypoints_reordered and keypoint2 in keypoints_reordered:
             index1 = keypoints_reordered.index(keypoint1)
@@ -136,6 +135,8 @@ while True:
     # Press 'q' to exit the loop
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+    elif key == ord('s'):  # Press 's' to stop tracking
+        tracking_enabled = False
 
 # Release the camera and close OpenCV windows
 cap.release()
