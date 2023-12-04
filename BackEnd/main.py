@@ -4,7 +4,7 @@ import Joints
 import Exercises
 
 # Create a VideoCapture object for the camera (0 for default camera)
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(3)
 
 # Check if the camera opened successfully
 if not cap.isOpened():
@@ -88,12 +88,9 @@ while True:
         x, y, w, h = cv2.boundingRect(yellow_contour)
         cv2.rectangle(yellow_mask, (x, y), (x + w, y + h), (0, 255, 255), 5)  # Yellow color, thickness 2
 
-<<<<<<< Updated upstream
-=======
     if not freeze_keypoints:
         initial_keypoints_positions = yellow_centroids.copy()
 
->>>>>>> Stashed changes
         # Calculates the center of the remaining yellow contours and stores them in the yellow_centroids list
     if tracking_enabled and not freeze_keypoints:
         yellow_centroids = []
@@ -135,14 +132,9 @@ while True:
                     font = cv2.FONT_HERSHEY_SIMPLEX
                     cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
                                 cv2.LINE_AA)
-<<<<<<< Updated upstream
-
-
-=======
         # Calculate the center of the remaining yellow contours based on the initial positions if not frozen
     if tracking_enabled and not freeze_keypoints:
         yellow_centroids = initial_keypoints_positions.copy()
->>>>>>> Stashed changes
 
     Joints.set_joints_list(yellow_centroids_sorted)
     Exercises.get_exercise_angles()
@@ -152,9 +144,6 @@ while True:
 
     # Shows the yellow masks with the yellow centroids
     cv2.imshow("Tracking of Skeleton", yellow_mask)
-
-    print(freeze_keypoints)
-    print(tracking_enabled)
 
     # Press 'q' to exit the loop
     key = cv2.waitKey(1) & 0xFF
