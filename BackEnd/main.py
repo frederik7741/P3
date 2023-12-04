@@ -4,7 +4,7 @@ import Joints
 import Exercises
 
 # Create a VideoCapture object for the camera (0 for default camera)
-cap = cv2.VideoCapture(3)
+cap = cv2.VideoCapture(0)
 
 # Check if the camera opened successfully
 if not cap.isOpened():
@@ -20,13 +20,6 @@ keypoints_reordered = [1, 2, 3]
 
 # Define connections between keypoints with labels
 skeleton_connections = [(1, 2, 'Hand and Elbow'), (2, 3, 'Elbow and Shoulder')]
-
-tracking_enabled = True
-
-freeze_keypoints = False
-
-# Initial positions of the keypoints
-initial_keypoints_positions = []
 
 while True:
     # Capture a frame from the camera
@@ -88,66 +81,53 @@ while True:
         x, y, w, h = cv2.boundingRect(yellow_contour)
         cv2.rectangle(yellow_mask, (x, y), (x + w, y + h), (0, 255, 255), 5)  # Yellow color, thickness 2
 
-        # Store the initial positions of the keypoints if not frozen
-    if not freeze_keypoints:
-        initial_keypoints_positions = yellow_centroids.copy()
-        # Clear the existing centroid_labels dictionary when initializing
-        centroid_labels = {}
-
-        # Assign labels based on the initial positions
-        for index, (x, y) in enumerate(initial_keypoints_positions):
-            if 0 <= index < len(keypoints):
-                centroid_labels[(x, y)] = keypoints[index]
-
-            # Calculate the center of the remaining yellow contours and stores them in the yellow_centroids list
-    if tracking_enabled and not freeze_keypoints:
-        yellow_centroids = []
-        for yellow_contour in filtered_yellow_contours:
-            x, y, w, h = cv2.boundingRect(yellow_contour)
-            centroid_x = x + w // 2
-            centroid_y = y + h // 2
-            yellow_centroids.append((centroid_x, centroid_y))
+    # Calculate the center of the remaining yellow contours and stores them in the yellow_centroids list
+    yellow_centroids = []
+    for yellow_contour in filtered_yellow_contours:
+        x, y, w, h = cv2.boundingRect(yellow_contour)
+        centroid_x = x + w // 2
+        centroid_y = y + h // 2
+        yellow_centroids.append((centroid_x, centroid_y))
 
         # Sorts the yellow centroids by the y coordinates only if tracking is enabled and keypoints can be updated
-    if tracking_enabled and not freeze_keypoints:
-        yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
+    yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
 
-    # Calculate the center of the remaining yellow contours based on the initial positions if not frozen
-    if tracking_enabled and not freeze_keypoints:
-        yellow_centroids = initial_keypoints_positions.copy()
+    # Sort hands based on x-coordinate
+    hands_sorted = sorted(
+        [(i, coord) for i, coord in enumerate(yellow_centroids) if i < len(keypoints) and keypoints[i] == 'Hands'],
+        key=lambda x: x[1][0])
+    yellow_centroids_sorted.extend(hands_sorted)
 
-    # makes the connections represent a skeleton-ish only if tracking is enabled
-    if tracking_enabled:
-        # makes the connections represent a skeleton-ish
-        for connection in skeleton_connections:
-            if len(connection) == 2:
-                keypoint1, keypoint2 = connection
-                label = f'{keypoint1} and {keypoint2}'
-            elif len(connection) == 3:
-                keypoint1, keypoint2, label = connection
+    # Sort shoulder and elbow based on y-coordinate
+    shoulder_elbow_sorted = sorted([(i, coord) for i, coord in enumerate(yellow_centroids) if
+                                    i < len(keypoints) and keypoints[i] in ['Shoulder', 'Elbows']],
+                                   key=lambda x: x[1][1])
+    yellow_centroids_sorted.extend(shoulder_elbow_sorted)
 
-        if keypoint1 in keypoints_reordered and keypoint2 in keypoints_reordered:
-            index1 = keypoints_reordered.index(keypoint1)
-            index2 = keypoints_reordered.index(keypoint2)
+    # makes the connections represent a skeleton-ish
+    for connection in skeleton_connections:
+        if len(connection) == 2:
+            keypoint1, keypoint2 = connection
+            label = f'{keypoint1} and {keypoint2}'
+        elif len(connection) == 3:
+            keypoint1, keypoint2, label = connection
 
+        # Find the indices of keypoints in the reordered list
+        index1 = keypoints_reordered.index(keypoint1)
+        index2 = keypoints_reordered.index(keypoint2)
+
+        # Check if both keypoints are within the valid range
         if index1 < len(yellow_centroids_sorted) and index2 < len(yellow_centroids_sorted):
-            # _, means that the first variable in the tuple is being ignored because we only want the x and y values.
+            # Get the centroids for the keypoints
             _, (x1, y1) = yellow_centroids_sorted[index1]
             _, (x2, y2) = yellow_centroids_sorted[index2]
 
-            if tracking_enabled:
-                for index, (x, y) in yellow_centroids_sorted:
-                    if 0 <= index < len(keypoints):
-                        cv2.circle(yellow_mask, (x, y), 5, (0, 255, 0), -1)  # Green color, filled circle
+            # Draw the connection
+            cv2.line(yellow_mask, (x1, y1), (x2, y2), (0, 255, 255), 2)
 
-                        # Add label text
-                        font = cv2.FONT_HERSHEY_SIMPLEX
-                        cv2.putText(yellow_mask, keypoints[index], (x - 10, y - 10), font, 0.5, (255, 255, 255), 1,
-                                    cv2.LINE_AA)
-
-    # Calculate the center of the remaining yellow contours based on the initial positions if not frozen
-    if tracking_enabled and not freeze_keypoints:
-        yellow_centroids = initial_keypoints_positions.copy()
+            # Add label text at the centroid of keypoint1
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            cv2.putText(yellow_mask, label, (int(x1) - 10, int(y1) - 10), font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
     Joints.set_joints_list(yellow_centroids_sorted)
     Exercises.get_exercise_angles()
@@ -156,15 +136,12 @@ while True:
     cv2.imshow("Segmented RGB with Tracked Yellow Objects", color_image)
 
     # Shows the yellow masks with the yellow centroids
-    if tracking_enabled:
-        cv2.imshow("Tracking of Skeleton", yellow_mask)
+    cv2.imshow("Tracking of Skeleton", yellow_mask)
 
         # Press 'q' to exit the loop
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
-    elif key == ord('s'):  # Press 's' to stop updating keypoints
-        freeze_keypoints = not freeze_keypoints
 
 # Release the camera and close OpenCV windows
 cap.release()
