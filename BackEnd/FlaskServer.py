@@ -91,7 +91,7 @@ def start_exercise():
 
     # Assuming count_reps.py is your script that counts the reps
     # and it accepts the exercise time as a command-line argument
-    script_path = os.path.join(os.path.dirname(__file__), 'Ai-body-tracking', 'body_tracking.py(1)')
+    script_path = os.path.join(os.path.dirname(__file__), 'count_reps.py')
 
     result = subprocess.run(
         [sys.executable, script_path, '--time', str(exercise_time)],
