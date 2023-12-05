@@ -1,24 +1,23 @@
 import numpy as np
-import pyzed.sl as sl
 import math
 import Joints
 from AngleDetection import points_to_bones
 
-neck = [0.0, 0.0, 0.0]
+neck = [0.0, 0.0]
 
-right_clavicle = [0.0, 0.0, 0.0]
-right_upper_arm = [0.0, 0.0, 0.0]
-right_lower_arm = [0.0, 0.0, 0.0]
-left_clavicle = [0.0, 0.0, 0.0]
-left_upper_arm = [0.0, 0.0, 0.0]
-left_lower_arm = [0.0, 0.0, 0.0]
+right_clavicle = [0.0, 0.0]
+right_upper_arm = [0.0, 0.0]
+right_lower_arm = [0.0, 0.0]
+left_clavicle = [0.0, 0.0]
+left_upper_arm = [0.0, 0.0]
+left_lower_arm = [0.0, 0.0]
 
-spine = [0.0, 0.0, 0.0]
+spine = [0.0, 0.0]
 
-right_upper_leg = [0.0, 0.0, 0.0]
-right_lower_leg = [0.0, 0.0, 0.0]
-left_upper_leg = [0.0, 0.0, 0.0]
-left_lower_leg = [0.0, 0.0, 0.0]
+right_upper_leg = [0.0, 0.0]
+right_lower_leg = [0.0, 0.0]
+left_upper_leg = [0.0, 0.0]
+left_lower_leg = [0.0, 0.0]
 
 bones_list = [neck,
               right_clavicle, right_upper_arm, right_lower_arm,
@@ -31,7 +30,7 @@ def get_bones_list():
     return bones_list
 
 def update_bones():
-    Joints.update_joints()
+    # Joints.update_joints()
     joints_list = Joints.get_joints_list()
 
     # Head

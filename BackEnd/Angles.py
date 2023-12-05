@@ -1,22 +1,21 @@
 import numpy as np
-import pyzed.sl as sl
 import math
 import Bones
 from AngleDetection import find_angle
 
-neck = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+neck = [0.0, 0.0], [0.0, 0.0]
 
-right_shoulder = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
-right_elbow = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+right_shoulder = [0.0, 0.0], [0.0, 0.0]
+right_elbow = [0.0, 0.0], [0.0, 0.0]
 
-left_shoulder = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
-left_elbow = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+left_shoulder = [0.0, 0.0], [0.0, 0.0]
+left_elbow = [0.0, 0.0], [0.0, 0.0]
 
-right_hip = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
-right_knee = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+right_hip = [0.0, 0.0], [0.0, 0.0]
+right_knee = [0.0, 0.0], [0.0, 0.0]
 
-left_hip = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
-left_knee = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+left_hip = [0.0, 0.0], [0.0, 0.0]
+left_knee = [0.0, 0.0], [0.0, 0.0]
 
 angles_list = [neck,
               right_shoulder, right_elbow,

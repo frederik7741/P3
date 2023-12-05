@@ -1,30 +1,60 @@
 # for at regne vinklerne mellem led, definerer vi leddene som en 3D vektor og finder vinklen derimellem
 
 import numpy as np
-import pyzed.sl as sl
 import math
 # import main
 
 def points_to_bones(point_1, point_2):
-    bone_vector = [point_2[0] - point_1[0], point_2[1] - point_1[1], point_2[2] - point_1[2]]
-    #bone_origin = point_1
-    #bone = bone_length, bone_origin
+    print("point_1:", point_1)
+    print("point_2:", point_2)
+
+    # Check if point_1 and point_2 are tuples
+    if not (isinstance(point_1, tuple) and isinstance(point_2, tuple)):
+        raise ValueError("Invalid input points")
+
+    # Extract (x, y) coordinates from the tuples
+    if isinstance(point_1[1], tuple):
+        x1, y1 = point_1[1]
+    elif isinstance(point_1[1], (int, float)):
+        x1, y1 = point_1[1], point_1[1]
+    else:
+        raise ValueError("Invalid input points")
+
+    if isinstance(point_2[1], tuple):
+        x2, y2 = point_2[1]
+    elif isinstance(point_2[1], (int, float)):
+        x2, y2 = point_2[1], point_2[1]
+    else:
+        raise ValueError("Invalid input points")
+
+    # Calculate bone vector
+    bone_vector = [x2 - x1, y2 - y1]
+
     return bone_vector
 
 
+
+
+
+
+
+
+
+
 def find_angle(bone_1, bone_2):
-    upper_dot_product = bone_1[0] * bone_2[0] + bone_1[1] * bone_2[1] + bone_1[2] * bone_2[2]
-    # print(f"Upper product: {upper_dot_product}")
+    if np.all(bone_1 == 0) or np.all(bone_2 == 0):
+        return 0.0  # You can modify this value based on how you want to handle zero vectors
 
-    lower_dot_product = (math.sqrt(bone_1[0] ** 2 + bone_1[1] ** 2 + bone_1[2] ** 2) *
-                         math.sqrt(bone_2[0] ** 2 + bone_2[1] ** 2 + bone_2[2] ** 2))
-    # print(f"Lower product: {lower_dot_product}")  # this part is not a dot product, but whatever its just simplification
+    upper_dot_product = np.dot(bone_1, bone_2)
+    lower_dot_product = np.linalg.norm(bone_1) * np.linalg.norm(bone_2)
 
-    dot_product = upper_dot_product / lower_dot_product
-    # print(f"Dot product: {dot_product}")
+    if lower_dot_product == 0:
+        return 0.0  # Handle division by zero appropriately
 
-    angle = math.acos(dot_product) * (180 / math.pi)
-    return angle  # if this angle is not between 0 - 180, something is very wrong
+    cosine_angle = upper_dot_product / lower_dot_product
+    angle = np.arccos(np.clip(cosine_angle, -1.0, 1.0))  # Ensure the value is within the valid range for arccos
+
+    return np.degrees(angle)
 
 
 #detected_body = bodies.get_first_body_2d_image()
