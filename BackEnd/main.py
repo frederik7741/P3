@@ -46,7 +46,7 @@ while True:
     # Create a mask for yellow color
     yellow_mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
 
-    # Shows the yellow mask with all of the yellow picked up by the threshold
+    # Shows the yellow mask with all the yellow picked up by the threshold
 
     cv2.imshow("Yellow mask before", yellow_mask)
     # filter for making yellow stuff be together
@@ -92,18 +92,6 @@ while True:
         # Sorts the yellow centroids by the y coordinates only if tracking is enabled and keypoints can be updated
     yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
 
-    # Sort hands based on x-coordinate
-    hands_sorted = sorted(
-        [(i, coord) for i, coord in enumerate(yellow_centroids) if i < len(keypoints) and keypoints[i] == 'Hands'],
-        key=lambda x: x[1][0])
-    yellow_centroids_sorted.extend(hands_sorted)
-
-    # Sort shoulder and elbow based on y-coordinate
-    shoulder_elbow_sorted = sorted([(i, coord) for i, coord in enumerate(yellow_centroids) if
-                                    i < len(keypoints) and keypoints[i] in ['Shoulder', 'Elbows']],
-                                   key=lambda x: x[1][1])
-    yellow_centroids_sorted.extend(shoulder_elbow_sorted)
-
     # makes the connections represent a skeleton-ish
     for connection in skeleton_connections:
         if len(connection) == 2:
@@ -121,6 +109,10 @@ while True:
             # Get the centroids for the keypoints
             _, (x1, y1) = yellow_centroids_sorted[index1]
             _, (x2, y2) = yellow_centroids_sorted[index2]
+
+            # Ensure y1 is higher than y2
+            if y1 > y2:
+                x1, y1, x2, y2 = x2, y2, x1, y1  # Swap the points
 
             # Draw the connection
             cv2.line(yellow_mask, (x1, y1), (x2, y2), (0, 255, 255), 2)
