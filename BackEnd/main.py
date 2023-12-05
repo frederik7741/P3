@@ -4,7 +4,7 @@ import Joints
 import Exercises
 
 # Create a VideoCapture object for the camera (0 for default camera)
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
 
 # Check if the camera opened successfully
 if not cap.isOpened():
@@ -28,7 +28,7 @@ while True:
         print("Error: Failed to capture frame.")
         break
 
-    # Inside the loop, after retrieving the RGB image
+    # Takes the color image and makes it HSV for better thresholding
     hsv_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
 
     # Apply morphological operations to refine the mask
@@ -43,7 +43,7 @@ while True:
     lower_yellow = np.array([11, 77, 227])
     upper_yellow = np.array([22, 255, 255])
 
-    # Create a mask for yellow color
+    # Create a mask for yellow color, that will later be displayed after some color thresholding
     yellow_mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
 
     # Shows the yellow mask with all the yellow picked up by the threshold
@@ -58,28 +58,7 @@ while True:
     # The yellow/orange color thresholds area are detected based on size
     yellow_contours, _ = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Doesn't do anything, but can't remove or else it won't work
-    min_blob_area = 90
-    max_blob_area = 120
-
-    bloobers = []
-    # technically this is supposed to filter out yellow contours that are not within the min/max blob area
-    for yellow_contour in yellow_contours:
-        area = cv2.contourArea(yellow_contour)
-        if min_blob_area <= area <= max_blob_area:
-            bloobers.append(yellow_contour)
-
-    # The 2 below lines create a mask with the detected yellow contours from the for loop above and fill out the area around them
-    pruned_mask = np.zeros_like(yellow_mask)
-    cv2.drawContours(pruned_mask, bloobers, -1, 255, thickness=cv2.FILLED)
-
-    # another filtering step to make sure that if the area is 0 it is not detected
     filtered_yellow_contours = [contour for contour in yellow_contours if cv2.contourArea(contour)]
-
-    # Draw rectangles around the detected yellow objects for some reason, this is also technically not needed, but breaks if removed
-    for yellow_contour in filtered_yellow_contours:
-        x, y, w, h = cv2.boundingRect(yellow_contour)
-        cv2.rectangle(yellow_mask, (x, y), (x + w, y + h), (0, 255, 255), 5)  # Yellow color, thickness 2
 
     # Calculate the center of the remaining yellow contours and stores them in the yellow_centroids list
     yellow_centroids = []
@@ -111,8 +90,6 @@ while True:
             # Get the centroids for the keypoints
             _, (x1, y1) = yellow_centroids_sorted[index1]
             _, (x2, y2) = yellow_centroids_sorted[index2]
-
-
 
             # Draw the connection
             cv2.line(yellow_mask, (x1, y1), (x2, y2), (0, 255, 255), 2)
