@@ -4,7 +4,7 @@ import Joints
 import Exercises
 
 # Create a VideoCapture object for the camera (0 for default camera)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
 
 # Check if the camera opened successfully
 if not cap.isOpened():
@@ -15,11 +15,11 @@ if not cap.isOpened():
 keypoints = ['Hands', 'Elbows', 'Shoulder']
 
 # Orders the keypoints so that the head is on top and the feet are at the bottom
-keypoints_reordered = [1, 2, 3]
+keypoints_reordered = [3, 2, 1]
 
 
 # Define connections between keypoints with labels
-skeleton_connections = [(1, 2, 'Hand and Elbow'), (2, 3, 'Elbow and Shoulder')]
+skeleton_connections = [(1, 2, 'Hand'), (2, 3, 'Elbow')]
 
 while True:
     # Capture a frame from the camera
@@ -89,8 +89,10 @@ while True:
         centroid_y = y + h // 2
         yellow_centroids.append((centroid_x, centroid_y))
 
-        # Sorts the yellow centroids by the y coordinates only if tracking is enabled and keypoints can be updated
-    yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: x[1][1])
+
+    # Sorts the yellow centroids by the x coordinates for the Hand and y coordinates for Elbow and Shoulder
+    yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: (x[1][0], x[1][1], x[0]))
+
 
     # makes the connections represent a skeleton-ish
     for connection in skeleton_connections:
@@ -110,9 +112,7 @@ while True:
             _, (x1, y1) = yellow_centroids_sorted[index1]
             _, (x2, y2) = yellow_centroids_sorted[index2]
 
-            # Ensure y1 is higher than y2
-            if y1 > y2:
-                x1, y1, x2, y2 = x2, y2, x1, y1  # Swap the points
+
 
             # Draw the connection
             cv2.line(yellow_mask, (x1, y1), (x2, y2), (0, 255, 255), 2)
