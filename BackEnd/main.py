@@ -58,34 +58,38 @@ while True:
     # The yellow/orange color thresholds area are detected based on size
     yellow_contours, _ = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+    # filters the yellow_contours list with cv2.contourArea so anything that is non-zero is excluded
     filtered_yellow_contours = [contour for contour in yellow_contours if cv2.contourArea(contour)]
 
     # Calculate the center of the remaining yellow contours and stores them in the yellow_centroids list
     yellow_centroids = []
     for yellow_contour in filtered_yellow_contours:
+        # cv2.boundingRect calculates the top-left conor, width and height of each yellow_contour in filtered_yellow_contours
         x, y, w, h = cv2.boundingRect(yellow_contour)
+        # the 2 lines below, calculates the center of each yellow_contour, by adding half of the width to x and half of the height to y
         centroid_x = x + w // 2
         centroid_y = y + h // 2
+        # stores the now calculated centroid coordinates to the yellow_centroid list.
         yellow_centroids.append((centroid_x, centroid_y))
-
 
     # Sorts the yellow centroids by the x coordinates for the Hand and y coordinates for Elbow and Shoulder
     yellow_centroids_sorted = sorted(enumerate(yellow_centroids), key=lambda x: (x[1][0], x[1][1], x[0]))
 
-
     # makes the connections represent a skeleton-ish
     for connection in skeleton_connections:
+        # the below if statement checks is the length of the connections have 2 or 3 elements
+        # if the length is 2 it makes a label, if its 3 the label is included
         if len(connection) == 2:
             keypoint1, keypoint2 = connection
             label = f'{keypoint1} and {keypoint2}'
         elif len(connection) == 3:
             keypoint1, keypoint2, label = connection
 
-        # Find the indices of keypoints in the reordered list
+        # Find the indices(index in plural) of keypoints in the reordered list
         index1 = keypoints_reordered.index(keypoint1)
         index2 = keypoints_reordered.index(keypoint2)
 
-        # Check if both keypoints are within the valid range
+        # Check if both keypoints are within the valid range, and can be attached to a yellow centroid sorted
         if index1 < len(yellow_centroids_sorted) and index2 < len(yellow_centroids_sorted):
             # Get the centroids for the keypoints
             _, (x1, y1) = yellow_centroids_sorted[index1]
@@ -107,7 +111,7 @@ while True:
     # Shows the yellow masks with the yellow centroids
     cv2.imshow("Tracking of Skeleton", yellow_mask)
 
-        # Press 'q' to exit the loop
+    # Press 'q' to exit the loop
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
