@@ -39,6 +39,8 @@ public class DataSender : MonoBehaviour
     // On start, assign a listener for the patient buttons.
     void Start()
     {
+        Application.runInBackground = true;
+        
         foreach (var pair in patientButtons)
         {
             pair.button.onClick.AddListener(() => OnPatientButtonClicked(pair.patientId));
@@ -107,24 +109,27 @@ public class DataSender : MonoBehaviour
         }
     }
     
-    private IEnumerator ExerciseCountdown(string durationText) {
-        if (int.TryParse(durationText, out int duration)) {
+    private IEnumerator ExerciseCountdown(string durationText)
+    {
+        if (int.TryParse(durationText, out int duration))
+        {
             overlayPanel.SetActive(true); // Enable the overlay to block interactions
 
             // Start countdown
-            for (int i = duration; i >= 0; i--) {
+            for (int i = duration; i >= 0; i--)
+            {
                 countdownText.text = "Vent Venligst: " + i.ToString(); // Update countdown text
                 yield return new WaitForSeconds(1);
             }
 
             countdownText.text = "Exercise Done!";
-            yield return new WaitForSeconds(2); // Wait for 2 seconds after the countdown
+            yield return new WaitForSeconds(5); // Wait for 2 seconds after the countdown
 
             countdownText.text = ""; // Clear the countdown text
             overlayPanel.SetActive(false); // Disable the overlay to allow interactions
-         
-            
-        } else {
+        }
+        else
+        {
             Debug.LogError("Invalid duration format.");
         }
     }
