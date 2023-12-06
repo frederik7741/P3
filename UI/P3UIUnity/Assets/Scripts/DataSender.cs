@@ -17,6 +17,8 @@ public class DataSender : MonoBehaviour
     public TextMeshProUGUI exerciseDurationText;
     public GameObject overlayPanel; // Assign this in the inspector
     public TextMeshProUGUI countdownText;
+    public ToggleGroup myToggleGroup;
+    
     
     // Serializable classes to hold the response data structure from the server.
     [System.Serializable]
@@ -32,6 +34,7 @@ public class DataSender : MonoBehaviour
         public string date;
         public int repetitions;
         public int time; 
+        public string exercise_name;
     }
 
 
@@ -55,7 +58,19 @@ public class DataSender : MonoBehaviour
         StartCoroutine(GetPatientExerciseData(patientId));
     }
 
-
+    private string GetActiveToggleName()
+    {
+        foreach (Toggle toggle in myToggleGroup.ActiveToggles())
+        {
+            if (toggle.isOn)
+            {
+                // Return the name of the active toggle
+              
+                return toggle.GetComponentInChildren<Text>().text;
+            }
+        }
+        return "None"; // Default or fallback name
+    }
 
     public void StartExerciseRoutine()
     {
@@ -65,13 +80,16 @@ public class DataSender : MonoBehaviour
             return;
         }
 
+        string selectedExerciseName = GetActiveToggleName(); // Get the selected exercise name
+        
         if (int.TryParse(exerciseDurationText.text, out int exerciseTime))
         {
             exerciseData data = new exerciseData
             {
                 patient_id = currentPatientId,
                 date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
-                time = exerciseTime
+                time = exerciseTime,
+                exercise_name = selectedExerciseName
             };
         
             string jsonData = JsonUtility.ToJson(data);
@@ -157,9 +175,10 @@ public class DataSender : MonoBehaviour
                     // Clear the current data to avoid duplicates
                     dateUIUpdater.ClearScrollView();
 
-                    // Update the UI with the fetched data.
+                    // Log and update the UI with the fetched data.
                     foreach (var exerciseData in wrapper.exerciseData)
                     {
+                        
                         dateUIUpdater.QueueExerciseData(exerciseData);
                     }
                 

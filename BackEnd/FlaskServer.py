@@ -25,23 +25,23 @@ def init_db():
     with app.app_context():
         db = get_db_connection()
         cursor = db.cursor()
-        # Create table for patients
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS patients (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT UNIQUE
             )
         ''')
-        # Create table for exercise data
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS exercise_data (
                 patient_id INTEGER,
                 date TEXT,
                 repetitions INTEGER,
+                exercise_name TEXT,  -- New column for exercise name
                 FOREIGN KEY(patient_id) REFERENCES patients(id)
             )
         ''')
         db.commit()
+
 
 # A test endpoint to check if the server is running.
 @app.route('/test_connection', methods=['GET'])
@@ -61,17 +61,19 @@ def get_exercise_data(patient_id):
     exercises = cursor.fetchall()
     db.close()
 
-    # Convert database rows to a list of dictionaries.
+    # Convert database rows to a list of dictionaries, including exercise_name.
     exercises_data = []
     if exercises:
         for exercise in exercises:
             exercises_data.append({
                 "patient_id": exercise['patient_id'],
                 "date": exercise['date'],
-                "repetitions": exercise['repetitions']
+                "repetitions": exercise['repetitions'],
+                "exercise_name": exercise['exercise_name']  # Include exercise name
             })
 
     return jsonify(exercises_data), 200
+
 
 
 @app.route('/start_exercise', methods=['POST'])
@@ -81,6 +83,7 @@ def start_exercise():
     patient_id = data.get('patient_id')
     date = data.get('date')
     exercise_time = data.get('time')
+    exercise_name = data.get('exercise_name')
 
     if exercise_time is None:
         print("No exercise time provided")
@@ -111,8 +114,8 @@ def start_exercise():
     db = get_db_connection()
     cursor = db.cursor()
     cursor.execute(
-        'INSERT INTO exercise_data (patient_id, date, repetitions) VALUES (?, ?, ?)',
-        (patient_id, date, reps_count)
+        'INSERT INTO exercise_data (patient_id, date, repetitions, exercise_name) VALUES (?, ?, ?, ?)',
+        (patient_id, date, reps_count, exercise_name)
     )
     db.commit()
     db.close()
@@ -139,8 +142,8 @@ def save_data():
     db = get_db_connection()
     cursor = db.cursor()
     cursor.execute(
-        'INSERT INTO exercise_data (patient_id, date, repetitions) VALUES (?, ?, ?)',
-        (patient_id, date, repetitions)
+        'INSERT INTO exercise_data (patient_id, date, repetitions, exercise_name) VALUES (?, ?, ?, ?)',
+        (patient_id, date, reps_count, exercise_name)
     )
     db.commit()
     db.close()
