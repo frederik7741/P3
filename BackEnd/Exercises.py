@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import Angles
+import AngleDetection
 
 exercises = ["bicep_curls",
              "treadmill_walking",
@@ -11,6 +12,9 @@ exercises = ["bicep_curls",
 chosen_exercise = exercises[0]  # pick one of the 5 exercises (0 - 4)
 
 important_angles = np.zeros(5)
+
+def get_angles(point_1, point_2, point_3):
+    print(AngleDetection.find_angle(points_to_bones(point_1, point_2), points_to_bones(point_2), points_to_bones(point_3)))
 
 
 def get_exercise_angles():
