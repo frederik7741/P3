@@ -8,7 +8,7 @@ exercises = ["bicep_curls",
              "standing_and_sitting",
              "step_ups"]
 
-chosen_exercise = exercises[4]  # pick one of the 5 exercises (0 - 4)
+chosen_exercise = exercises[0]  # pick one of the 5 exercises (0 - 4)
 
 important_angles = np.zeros(5)
 
