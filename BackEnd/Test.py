@@ -2,9 +2,10 @@ import cv2
 import numpy as np
 import math
 import time
+import sys
 
 # Create a VideoCapture object for the camera (0 for default camera)
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 # Check if the camera opened successfully
 if not cap.isOpened():
@@ -72,51 +73,68 @@ calibration_keypoints = calibrate()
 rep_count = 0
 arm_extended = False  # State to track if arm is extended
 
-# Main loop
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        print("Error: Failed to capture frame.")
-        break
+def main(exercise_time):
+    global arm_extended, rep_count
+    start_time = time.time()
 
-    keypoints = detect_keypoints(frame)
+    while time.time() - start_time < exercise_time:
+        ret, frame = cap.read()
+        if not ret:
+            print("Error: Failed to capture frame.")
+            break
 
-    if len(keypoints) >= 3:
-        keypoints_sorted = sorted(keypoints, key=lambda point: (point[0], point[1]))[:3]
-        shoulder_point, elbow_point, hand_point = keypoints_sorted
+        keypoints = detect_keypoints(frame)
 
-        # Calculate the angle
-        angle = calculate_angle(shoulder_point, elbow_point, hand_point)
+        if len(keypoints) >= 3:
+            keypoints_sorted = sorted(keypoints, key=lambda point: (point[0], point[1]))[:3]
+            shoulder_point, elbow_point, hand_point = keypoints_sorted
 
-        # Check if arm is extended
-        if angle > 130:
-            arm_extended = True
+            # Calculate the angle
+            angle = calculate_angle(shoulder_point, elbow_point, hand_point)
 
-        # Check if arm is curled and was previously extended
-        if arm_extended and angle <= 50:
-            rep_count += 1
-            arm_extended = False  # Reset the state
+            # Check if arm is extended
+            if angle > 130:
+                arm_extended = True
 
-        # Display the angle and rep count
-        cv2.putText(frame, f"Angle: {int(angle)}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, f"Reps: {rep_count}", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            # Check if arm is curled and was previously extended
+            if arm_extended and angle <= 50:
+                rep_count += 1
+                arm_extended = False  # Reset the state
 
-        # Draw the keypoints and connections
-        for point in [shoulder_point, elbow_point, hand_point]:
-            cv2.circle(frame, point, 5, (0, 255, 0), -1)
-        cv2.line(frame, shoulder_point, elbow_point, (255, 0, 0), 3)
-        cv2.line(frame, elbow_point, hand_point, (255, 0, 0), 3)
-    else:
-        cv2.putText(frame, "Keypoints not detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            # Display the angle and rep count
+            cv2.putText(frame, f"Angle: {int(angle)}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, f"Reps: {rep_count}", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-    # Display the frame
-    cv2.imshow("Frame", frame)
+            # Draw the keypoints and connections
+            for point in [shoulder_point, elbow_point, hand_point]:
+                cv2.circle(frame, point, 5, (0, 255, 0), -1)
+            cv2.line(frame, shoulder_point, elbow_point, (255, 0, 0), 3)
+            cv2.line(frame, elbow_point, hand_point, (255, 0, 0), 3)
+        else:
+            cv2.putText(frame, "Keypoints not detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-    # Exit on 'q' press
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        # Display the frame
+        cv2.imshow("Frame", frame)
 
-# Cleanup
-cap.release()
-cv2.destroyAllWindows()
+        # Exit condition based on time elapsed
+        if time.time() - start_time >= exercise_time:
+            break
 
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Print the final rep count at the end of the exercise time
+    print("Hello")
+    print(rep_count)
+
+    # Cleanup
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3 or sys.argv[1] != '--time':
+        print("Usage: python script_name.py --time <exercise_time_in_seconds>")
+        sys.exit(1)
+
+    exercise_time = int(sys.argv[2])
+    main(exercise_time)
