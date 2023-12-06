@@ -5,8 +5,10 @@ import math
 # import main
 
 def points_to_bones(point_1, point_2):
-    print("point_1:", point_1)
-    print("point_2:", point_2)
+    # bone_vector = [point_2[0] - point_1[0], point_2[1] - point_1[1]]
+
+    # print("point_1:", point_1, "ahhhhh")
+    # print("point_2:", point_2, "tjuuuu")
 
     # Check if point_1 and point_2 are tuples
     if not (isinstance(point_1, tuple) and isinstance(point_2, tuple)):
@@ -31,15 +33,6 @@ def points_to_bones(point_1, point_2):
     bone_vector = [x2 - x1, y2 - y1]
 
     return bone_vector
-
-
-
-
-
-
-
-
-
 
 def find_angle(bone_1, bone_2):
     if np.all(bone_1 == 0) or np.all(bone_2 == 0):

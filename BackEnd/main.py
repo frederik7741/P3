@@ -3,6 +3,9 @@ import numpy as np
 import Joints
 import Exercises
 
+# Used for printing angles
+output_counter = 0
+
 # Create a VideoCapture object for the camera (0 for default camera)
 cap = cv2.VideoCapture(0)
 
@@ -103,7 +106,12 @@ while True:
             cv2.putText(yellow_mask, label, (int(x1) - 10, int(y1) - 10), font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
     Joints.set_joints_list(yellow_centroids_sorted)
-    Exercises.get_exercise_angles()
+
+    # Used as a counter to only call(print) angles every 10th frame
+    output_counter += 1
+    if output_counter % 10 == 0:
+        print(f"\n-=- UPDATE {int(output_counter / 10)} -=-")
+        Exercises.get_exercise_angles()
 
     # Shows the raw image of the camera
     cv2.imshow("Segmented RGB with Tracked Yellow Objects", color_image)

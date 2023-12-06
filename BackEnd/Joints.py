@@ -49,6 +49,7 @@ def get_joints_list():
 def set_joints_list(keypoint_list):
     index = 0
     for keypoint in keypoint_list:
+        # _, joints_list[index] = keypoint
         joints_list[index] = keypoint
         index += 1
 
