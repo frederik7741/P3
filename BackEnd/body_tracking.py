@@ -116,7 +116,8 @@ def main():
 
     # Create OpenGL viewer
     viewer = gl.GLViewer()
-    viewer.init(camera_info.camera_configuration.calibration_parameters.left_cam, body_param.enable_tracking,body_param.body_format)
+    viewer.init(camera_info.camera_configuration.calibration_parameters.left_cam, body_param.enable_tracking)
+
     # Create ZED objects filled in the main loop
     bodies = sl.Bodies()
     image = sl.Mat()

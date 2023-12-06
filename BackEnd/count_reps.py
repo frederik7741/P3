@@ -5,7 +5,7 @@ def count_reps(exercise_time):
     # Simulate the time taken to perform the exercise
     time.sleep(int(exercise_time))
     # Placeholder for the number of repetitions counted
-    reps_count = 51
+    reps_count = 15
     return reps_count
 
 if __name__ == "__main__":
