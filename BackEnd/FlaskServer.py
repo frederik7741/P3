@@ -91,7 +91,7 @@ def start_exercise():
 
     print("Exercise time received:", exercise_time)
 
-    script_path = os.path.join(os.path.dirname(__file__), 'Test.py')
+    script_path = os.path.join(os.path.dirname(__file__), 'Alternativ.py')
 
     result = subprocess.run(
         [sys.executable, script_path, '--time', str(exercise_time)],

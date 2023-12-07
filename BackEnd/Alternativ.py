@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import sys
+import time
 
 def calculate_angle(pt1, pt2, pt3):
     vector1 = [pt1[0] - pt2[0], pt1[1] - pt2[1]]
@@ -48,7 +50,8 @@ def calibrate_keypoints(cap, background, num_samples=30):
     contour_ys = [point[0][1] for point in contour_points]
     return int(np.median(contour_xs)), int(np.median(contour_ys))
 
-def main():
+
+def main(exercise_time):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Error: Could not open camera.")
@@ -60,12 +63,15 @@ def main():
     background = cv2.cvtColor(background, cv2.COLOR_BGR2GRAY)
     median_x, median_y = calibrate_keypoints(cap, background)
     previous_angle, rep_count = 180, 0
-    min_angle_for_rep, max_angle_for_rep = 100, 130
+    min_angle_for_rep, max_angle_for_rep = 100, 120
     has_extended, wrist_extension_threshold = True, 90
-    while True:
+
+    start_time = time.time()
+    while time.time() - start_time < exercise_time:
         ret, frame = cap.read()
         if not ret:
             break
+
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         fgMask = cv2.absdiff(background, gray_frame)
         _, fgMask = cv2.threshold(fgMask, 10, 255, cv2.THRESH_BINARY)
@@ -94,6 +100,13 @@ def main():
             break
     cap.release()
     cv2.destroyAllWindows()
+    print(rep_count)
+
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 3 or sys.argv[1] != '--time':
+        print("Usage: python Alternativ.py --time <exercise_time_in_seconds>")
+        sys.exit(1)
+
+    exercise_time = int(sys.argv[2])
+    main(exercise_time)
