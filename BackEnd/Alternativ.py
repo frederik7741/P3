@@ -106,11 +106,11 @@ def main(exercise_time, difficulty):
             is_resting = elbow_angle > 160 and wrist[0] - median_x < wrist_extension_threshold
             elbow_angle_text = "Resting" if is_resting else f'Angle: {int(elbow_angle)} deg'
             cv2.putText(frame, elbow_angle_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            if has_extended and elbow_angle >= max_angle_for_rep and not is_resting:
-                has_extended = False
-            if not has_extended and previous_angle > min_angle_for_rep and elbow_angle <= min_angle_for_rep:
+            if not has_extended and elbow_angle > max_angle_for_rep:
                 rep_count += 1
                 has_extended = True
+            elif has_extended and elbow_angle <= min_angle_for_rep:
+                has_extended = False
             previous_angle = elbow_angle
             draw_points_and_lines(frame, [shoulder, elbow, wrist])
         cv2.putText(frame, f'Reps: {rep_count}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
