@@ -58,9 +58,7 @@ def get_neighbour_pixel_depths(pixel):
     print(avg_depth)
     return avg_depth
 
-
-image_path = "C:/Users/Mikkel Rusbak/Pictures/Saved Pictures/alien and fwiend.png"
-# depth_image = zed.retrieve_image(main.depth_image, sl.VIEW.DEPTH)
+depth_image = zed.retrieve_image(main.depth_image, sl.VIEW.DEPTH)
 
 # Read the image using cv2
 image = cv2.imread(image_path)
