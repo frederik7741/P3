@@ -83,7 +83,7 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
     else:
         # Default thresholds if difficulty is not recognized
         max_angle_for_rep = 100
-        min_angle_for_rep = 160
+        min_angle_for_rep = 130
 
     cap = cv2.VideoCapture(0)
 
@@ -109,50 +109,53 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
         # Write the header to the CSV file
         writer.writeheader()
 
-    start_time = time.time()
-    while time.time() - start_time < exercise_time:
-        ret, frame = cap.read()
-        if not ret:
-            break
+        start_time = time.time()
+        smallest_angle = float('inf')  # Initialize with a large value
+        while time.time() - start_time < exercise_time:
+            ret, frame = cap.read()
+            if not ret:
+                break
 
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        fgMask = cv2.absdiff(background, gray_frame)
-        _, fgMask = cv2.threshold(fgMask, 10, 255, cv2.THRESH_BINARY)
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        fgMask = cv2.morphologyEx(fgMask, cv2.MORPH_OPEN, kernel, iterations=2)
-        fgMask = cv2.dilate(fgMask, kernel, iterations=3)
-        contours, _ = cv2.findContours(fgMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            fgMask = cv2.absdiff(background, gray_frame)
+            _, fgMask = cv2.threshold(fgMask, 10, 255, cv2.THRESH_BINARY)
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+            fgMask = cv2.morphologyEx(fgMask, cv2.MORPH_OPEN, kernel, iterations=2)
+            fgMask = cv2.dilate(fgMask, kernel, iterations=3)
+            contours, _ = cv2.findContours(fgMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
 
-        if contours:
-            body_contour = max(contours, key=cv2.contourArea)
-            shoulder, elbow, wrist = find_arm_keypoints(body_contour, median_x, median_y)
-            elbow_angle = calculate_angle(shoulder, elbow, wrist)
+            if contours:
+                body_contour = max(contours, key=cv2.contourArea)
+                shoulder, elbow, wrist = find_arm_keypoints(body_contour, median_x, median_y)
+                elbow_angle = calculate_angle(shoulder, elbow, wrist)
 
-            is_resting = elbow_angle > 160 and wrist[0] - median_x < wrist_extension_threshold
-            elbow_angle_text = "Resting" if is_resting else f'Angle: {int(elbow_angle)} deg'
-            cv2.putText(frame, elbow_angle_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+                is_resting = elbow_angle > 160 and wrist[0] - median_x < wrist_extension_threshold
+                elbow_angle_text = "Resting" if is_resting else f'Angle: {int(elbow_angle)} deg'
+                cv2.putText(frame, elbow_angle_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
-            if has_extended and elbow_angle >= max_angle_for_rep and not is_resting:
-                has_extended = False
+                if has_extended and elbow_angle >= max_angle_for_rep and not is_resting:
+                    has_extended = False
 
-            if not has_extended and previous_angle > min_angle_for_rep and elbow_angle <= min_angle_for_rep:
-                rep_count += 1
-                has_extended = True
+                if not has_extended and previous_angle > min_angle_for_rep and elbow_angle <= min_angle_for_rep:
+                    rep_count += 1
+                    has_extended = True
 
-                smallest_angle = min_angle_for_rep
-                writer.writerow({'Rep': rep_count, 'Smallest_Angle': smallest_angle})
+                    # Log the smallest angle for the current rep
+                    smallest_angle = min(smallest_angle, elbow_angle)
+                    writer.writerow({'Rep': rep_count, 'Smallest_Angle': smallest_angle})
 
-            elif has_extended and elbow_angle <= min_angle_for_rep:
-                has_extended = False
-            previous_angle = elbow_angle
-            draw_points_and_lines(frame, [shoulder, elbow, wrist])
+                elif has_extended and elbow_angle <= min_angle_for_rep:
+                    has_extended = False
 
-        cv2.putText(frame, f'Reps: {rep_count}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-        cv2.imshow("Frame", frame)
-        cv2.imshow("Foreground Mask", fgMask)
+                previous_angle = elbow_angle
+                draw_points_and_lines(frame, [shoulder, elbow, wrist])
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            cv2.putText(frame, f'Reps: {rep_count}', (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            cv2.imshow("Frame", frame)
+            cv2.imshow("Foreground Mask", fgMask)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
     cap.release()
     cv2.destroyAllWindows()
