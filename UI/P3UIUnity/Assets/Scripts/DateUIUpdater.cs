@@ -11,6 +11,7 @@ public class ExerciseData
     public string date;
     public int repetitions;
     public string exercise_name;
+	public string difficulty;
 }
 
 // This class manages the UI elements that display exercise data for patients.
@@ -21,6 +22,7 @@ public class DateUIUpdater : MonoBehaviour
     public TextMeshProUGUI repsPlaceholder; // Text field to show the number of repetitions.
     public TextMeshProUGUI datePlaceholder; // Text field to show the date of the exercise.
     public TextMeshProUGUI exerciseNamePlaceholder;
+	public TextMeshProUGUI difficultyPlaceholder;
 	public GameObject buttonPrefab; // Assign this prefab in the Inspector
 	public Transform scrollViewContent; // Assign the content panel of your ScrollRect here
 	public GameObject InformationBox;
@@ -81,6 +83,7 @@ public void ClearScrollView()
     repsPlaceholder.text = $"Reps: {data.repetitions}";
     datePlaceholder.text = $"Date: {data.date}";
     exerciseNamePlaceholder.text = $"Exercise: {data.exercise_name}";
+	difficultyPlaceholder.text = $"Difficulty: {data.difficulty}";
 }
 
 

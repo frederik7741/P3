@@ -25,28 +25,31 @@ def init_db():
     with app.app_context():
         db = get_db_connection()
         cursor = db.cursor()
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS patients (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT UNIQUE
             )
         ''')
+        db.commit()
+
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS exercise_data (
                 patient_id INTEGER,
                 date TEXT,
                 repetitions INTEGER,
-                exercise_name TEXT,  -- New column for exercise name
+                exercise_name TEXT,
+                difficulty TEXT,
                 FOREIGN KEY(patient_id) REFERENCES patients(id)
             )
         ''')
         db.commit()
+        db.close()
 
 
-# A test endpoint to check if the server is running.
-@app.route('/test_connection', methods=['GET'])
-def test_connection():
-    return jsonify({"message": "Server is running and connection is successful"}), 200
+
 
 # Endpoint to retrieve exercise data for a specific patient by ID.
 @app.route('/get_exercise_data/<int:patient_id>', methods=['GET'])
@@ -69,7 +72,8 @@ def get_exercise_data(patient_id):
                 "patient_id": exercise['patient_id'],
                 "date": exercise['date'],
                 "repetitions": exercise['repetitions'],
-                "exercise_name": exercise['exercise_name']  # Include exercise name
+                "exercise_name": exercise['exercise_name'],
+                "difficulty": exercise['difficulty']  # Include difficulty
             })
 
     return jsonify(exercises_data), 200
@@ -84,6 +88,7 @@ def start_exercise():
     date = data.get('date')
     exercise_time = data.get('time')
     exercise_name = data.get('exercise_name')
+    difficulty = data.get('difficulty')
 
     if exercise_time is None:
         print("No exercise time provided")
@@ -94,7 +99,7 @@ def start_exercise():
     script_path = os.path.join(os.path.dirname(__file__), 'Alternativ.py')
 
     result = subprocess.run(
-        [sys.executable, script_path, '--time', str(exercise_time)],
+        [sys.executable, script_path, '--time', str(exercise_time), '--difficulty', difficulty],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True
@@ -114,8 +119,8 @@ def start_exercise():
     db = get_db_connection()
     cursor = db.cursor()
     cursor.execute(
-        'INSERT INTO exercise_data (patient_id, date, repetitions, exercise_name) VALUES (?, ?, ?, ?)',
-        (patient_id, date, reps_count, exercise_name)
+        'INSERT INTO exercise_data (patient_id, date, repetitions, exercise_name, difficulty) VALUES (?, ?, ?, ?, ?)',
+        (patient_id, date, reps_count, exercise_name, difficulty)
     )
     db.commit()
     db.close()
@@ -142,8 +147,8 @@ def save_data():
     db = get_db_connection()
     cursor = db.cursor()
     cursor.execute(
-        'INSERT INTO exercise_data (patient_id, date, repetitions, exercise_name) VALUES (?, ?, ?, ?)',
-        (patient_id, date, reps_count, exercise_name)
+        'INSERT INTO exercise_data (patient_id, date, repetitions, exercise_name) VALUES (?, ?, ?, ?, ?)',
+        (patient_id, date, reps_count, exercise_name, difficulty)
     )
     db.commit()
     db.close()

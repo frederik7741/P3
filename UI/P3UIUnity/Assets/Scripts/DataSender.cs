@@ -18,7 +18,10 @@ public class DataSender : MonoBehaviour
     public GameObject overlayPanel; // Assign this in the inspector
     public TextMeshProUGUI countdownText;
     public ToggleGroup myToggleGroup;
-    
+    public TMP_Dropdown difficultyDropdown; // Assign this in the inspector
+    public TextMeshProUGUI instructionText; // Assign this in the Inspector
+    private float fixedDelayBeforeCalibration = 5f; // Adjust based on your Python script delay
+    private float calibrationDuration = 7f;
     
     // Serializable classes to hold the response data structure from the server.
     [System.Serializable]
@@ -35,10 +38,16 @@ public class DataSender : MonoBehaviour
         public int repetitions;
         public int time; 
         public string exercise_name;
+        public string difficulty;
     }
 
 
-
+    private string GetSelectedDifficulty()
+    {
+        // Assuming dropdown options are exactly "Mild", "Moderat", and "Hårdt Ramt"
+        return difficultyDropdown.options[difficultyDropdown.value].text;
+    }
+    
     // On start, assign a listener for the patient buttons.
     void Start()
     {
@@ -81,6 +90,7 @@ public class DataSender : MonoBehaviour
         }
 
         string selectedExerciseName = GetActiveToggleName(); // Get the selected exercise name
+        string selectedDifficulty = GetSelectedDifficulty();
         
         if (int.TryParse(exerciseDurationText.text, out int exerciseTime))
         {
@@ -89,7 +99,8 @@ public class DataSender : MonoBehaviour
                 patient_id = currentPatientId,
                 date = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
                 time = exerciseTime,
-                exercise_name = selectedExerciseName
+                exercise_name = selectedExerciseName,
+                difficulty = selectedDifficulty
             };
         
             string jsonData = JsonUtility.ToJson(data);
@@ -105,6 +116,30 @@ public class DataSender : MonoBehaviour
 
     private IEnumerator StartExerciseRoutine(string jsonData)
     {
+        // Display initial instruction for the user to stay out of the frame
+        instructionText.text = "Please stay out of the frame for background setup.";
+
+        // Start the request to the server to begin the exercise (including calibration in Python script)
+        StartCoroutine(SendExerciseStartRequest(jsonData));
+
+        // Wait for the fixed delay before calibration starts
+        yield return new WaitForSeconds(fixedDelayBeforeCalibration);
+
+        // Notify the user to enter the frame for calibration
+        instructionText.text = "Please enter the frame for calibration.";
+
+        // Wait for the calibration phase to complete
+        yield return new WaitForSeconds(calibrationDuration);
+
+        // Notify the user that the exercise is about to start
+        instructionText.text = "Please perform the exercise.";
+
+        // Start the countdown timer for the exercise
+        StartCoroutine(ExerciseCountdown(exerciseDurationText.text));
+    }
+
+    private IEnumerator SendExerciseStartRequest(string jsonData)
+    {
         using (UnityWebRequest www = UnityWebRequest.Post("http://localhost:5000/start_exercise", jsonData))
         {
             www.SetRequestHeader("Content-Type", "application/json");
@@ -112,20 +147,20 @@ public class DataSender : MonoBehaviour
             www.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
             www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
 
-            yield return www.SendWebRequest(); // Wait for the server response.
+            yield return www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError($"Error starting exercise: {www.error}");
             }
-            else
-            {
-                Debug.Log($"Exercise Completed: {www.downloadHandler.text}");
-                // Here you can parse the response and update the UI with the reps count
-                // after the exercise time has elapsed
-            }
         }
     }
+
+
+
+
+
+
     
     private IEnumerator ExerciseCountdown(string durationText)
     {

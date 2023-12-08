@@ -107,7 +107,23 @@ public class GraphManager : MonoBehaviour
 
             float heightFactor = Mathf.Clamp01((float)exerciseDataList[i].repetitions / 50f); // 50 is max reps
             rt.sizeDelta = new Vector2(barWidth, heightFactor * graphContainer.rect.height);
-                
+
+            Image barImage = bar.GetComponent<Image>(); 
+        switch (exerciseDataList[i].difficulty)
+        {
+            case "Mild":
+                barImage.color = Color.green; // Light green color
+                break;
+            case "Moderat":
+                barImage.color = Color.yellow; // Yellow color
+                break;
+            case "Hårdt Ramt":
+                barImage.color = Color.red; // Red color
+                break;
+            default:
+                barImage.color = Color.white; // Default color (white)
+                break;
+        }    
             // Instantiate a new TextMeshProUGUI or similar for the label
             GameObject label = new GameObject("ExerciseLabel", typeof(TextMeshProUGUI));
             label.transform.SetParent(graphContainer);
