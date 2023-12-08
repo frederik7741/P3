@@ -59,14 +59,14 @@ def main(exercise_time, difficulty):
 
     # Set thresholds based on difficulty
     if difficulty == 'Mild':
-        min_angle_for_rep = 100
-        max_angle_for_rep = 130
+        max_angle_for_rep = 100
+        min_angle_for_rep = 160
     elif difficulty == 'Moderat':
-        min_angle_for_rep = 110
-        max_angle_for_rep = 130
+        max_angle_for_rep = 110
+        min_angle_for_rep = 160
     elif difficulty == 'Hårdt Ramt':
-        min_angle_for_rep = 120
-        max_angle_for_rep = 130
+        max_angle_for_rep = 140
+        min_angle_for_rep = 160
     else:
         # Default thresholds if difficulty is not recognized
         max_angle_for_rep = 100
