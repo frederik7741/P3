@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import sys
 import time
+import argparse
 import csv
 
 def calculate_angle(pt1, pt2, pt3):
@@ -36,7 +37,8 @@ def draw_points_and_lines(frame, points):
             cv2.line(frame, (point[0], point[1]), (points[i + 1][0], points[i + 1][1]), (255, 0, 0), 2)
 
 def calibrate_keypoints(cap, background, num_samples=30):
-    print("Calibration starting in 5 seconds. Please stand in position.")
+    print("Calibration starting in 7 seconds. Please stand in position.")
+    print("CALIBRATION_START")
     cv2.waitKey(7000)
     contour_points = []
 
@@ -64,6 +66,25 @@ def calibrate_keypoints(cap, background, num_samples=30):
 
 
 def main(exercise_time, csv_filename="rep_angles.csv"):
+def main(exercise_time, difficulty):
+
+    exercise_time = 30
+
+    # Set thresholds based on difficulty
+    if difficulty == 'Mild':
+        min_angle_for_rep = 100
+        max_angle_for_rep = 130
+    elif difficulty == 'Moderat':
+        min_angle_for_rep = 110
+        max_angle_for_rep = 130
+    elif difficulty == 'Hårdt Ramt':
+        min_angle_for_rep = 120
+        max_angle_for_rep = 130
+    else:
+        # Default thresholds if difficulty is not recognized
+        max_angle_for_rep = 100
+        min_angle_for_rep = 160
+
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
@@ -79,7 +100,6 @@ def main(exercise_time, csv_filename="rep_angles.csv"):
     background = cv2.cvtColor(background, cv2.COLOR_BGR2GRAY)
     median_x, median_y = calibrate_keypoints(cap, background)
     previous_angle, rep_count = 180, 0
-    min_angle_for_rep, max_angle_for_rep = 100, 120
     has_extended, wrist_extension_threshold = True, 90
 
     with open(csv_filename, mode='w', newline='') as csv_file:
@@ -138,9 +158,9 @@ def main(exercise_time, csv_filename="rep_angles.csv"):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3 or sys.argv[1] != '--time':
-        print("Usage: python Alternativ.py --time <exercise_time_in_seconds>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--time', type=int, default=60, help='Exercise time in seconds')
+    parser.add_argument('--difficulty', type=str, default='Mild', help='Difficulty level')
+    args = parser.parse_args()
 
-    exercise_time = int(sys.argv[2])
-    main(exercise_time)
+    main(args.time, args.difficulty)
