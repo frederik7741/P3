@@ -141,8 +141,8 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv"):
                     rep_count += 1
                     has_extended = True
 
-                    # Log the smallest angle for the current rep
-                    smallest_angle = min(smallest_angle, elbow_angle)
+                    # Log the smallest angle for the current rep (inverted)
+                    smallest_angle = min(smallest_angle, 180 - elbow_angle)
                     writer.writerow({'Rep': rep_count, 'Smallest_Angle': smallest_angle})
 
                 elif has_extended and elbow_angle <= min_angle_for_rep:
