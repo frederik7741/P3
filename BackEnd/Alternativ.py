@@ -82,7 +82,7 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv"):
     else:
         # Default thresholds if difficulty is not recognized
         max_angle_for_rep = 100
-        min_angle_for_rep = 160
+        min_angle_for_rep = 130
 
     cap = cv2.VideoCapture(0)
 
@@ -109,6 +109,7 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv"):
         writer.writeheader()
 
         start_time = time.time()
+        smallest_angle = float('inf')  # Initialize with a large value
         while time.time() - start_time < exercise_time:
             ret, frame = cap.read()
             if not ret:
@@ -138,11 +139,13 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv"):
                     rep_count += 1
                     has_extended = True
 
-                    smallest_angle = min_angle_for_rep
+                    # Log the smallest angle for the current rep
+                    smallest_angle = min(smallest_angle, elbow_angle)
                     writer.writerow({'Rep': rep_count, 'Smallest_Angle': smallest_angle})
 
                 elif has_extended and elbow_angle <= min_angle_for_rep:
                     has_extended = False
+
                 previous_angle = elbow_angle
                 draw_points_and_lines(frame, [shoulder, elbow, wrist])
 
