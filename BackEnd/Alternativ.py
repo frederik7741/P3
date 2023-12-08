@@ -110,11 +110,13 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
         writer.writeheader()
 
         start_time = time.time()
-        smallest_angle = float('inf')  # Initialize with a large value
         while time.time() - start_time < exercise_time:
             ret, frame = cap.read()
             if not ret:
                 break
+
+            # Initialize smallest_angle for each repetition
+            smallest_angle = float('inf')
 
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             fgMask = cv2.absdiff(background, gray_frame)
