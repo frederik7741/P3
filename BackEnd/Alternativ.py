@@ -65,8 +65,8 @@ def calibrate_keypoints(cap, background, num_samples=30):
     return int(np.median(contour_xs)), int(np.median(contour_ys))
 
 
-def main(exercise_time, csv_filename="rep_angles.csv"):
-def main(exercise_time, difficulty):
+def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
+
 
     exercise_time = 30
 
