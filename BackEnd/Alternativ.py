@@ -103,7 +103,7 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
     has_extended, wrist_extension_threshold = True, 90
 
     with open(csv_filename, mode='w', newline='') as csv_file:
-        fieldnames = ['Rep', 'Smallest_Angle']
+        fieldnames = ['Rep', 'Smallest_Angle', 'Contours_Count']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         # Write the header to the CSV file
@@ -115,8 +115,9 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
             if not ret:
                 break
 
-            # Initialize smallest_angle for each repetition
+            # Initialize smallest_angle and contours_count for each repetition
             smallest_angle = float('inf')
+            contours_count = 0
 
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             fgMask = cv2.absdiff(background, gray_frame)
@@ -125,6 +126,9 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
             fgMask = cv2.morphologyEx(fgMask, cv2.MORPH_OPEN, kernel, iterations=2)
             fgMask = cv2.dilate(fgMask, kernel, iterations=3)
             contours, _ = cv2.findContours(fgMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+
+            # Count the number of contours in the current frame
+            contours_count = len(contours)
 
             if contours:
                 body_contour = max(contours, key=cv2.contourArea)
@@ -142,9 +146,10 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
                     rep_count += 1
                     has_extended = True
 
-                    # Log the smallest angle for the current rep (inverted)
+                    # Log the smallest angle and contours count for the current rep (inverted)
                     smallest_angle = min(smallest_angle, 180 - elbow_angle)
-                    writer.writerow({'Rep': rep_count, 'Smallest_Angle': smallest_angle})
+                    writer.writerow(
+                        {'Rep': rep_count, 'Smallest_Angle': smallest_angle, 'Contours_Count': contours_count})
 
                 elif has_extended and elbow_angle <= min_angle_for_rep:
                     has_extended = False
