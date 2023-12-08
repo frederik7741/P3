@@ -142,6 +142,8 @@ def main(exercise_time, difficulty):
                 smallest_angle = min_angle_for_rep
                 writer.writerow({'Rep': rep_count, 'Smallest_Angle': smallest_angle})
 
+            elif has_extended and elbow_angle <= min_angle_for_rep:
+                has_extended = False
             previous_angle = elbow_angle
             draw_points_and_lines(frame, [shoulder, elbow, wrist])
 
