@@ -72,18 +72,22 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
 
     # Set thresholds based on difficulty
     if difficulty == 'Mild':
-        max_angle_for_rep = 100
-        min_angle_for_rep = 160
+        max_angle_for_rep = 70
+        min_angle_for_rep = 140
+        Succesful_rep = 120
     elif difficulty == 'Moderat':
-        max_angle_for_rep = 110
-        min_angle_for_rep = 160
+        max_angle_for_rep = 70
+        min_angle_for_rep = 130
+        Succesful_rep = 110
     elif difficulty == 'Hårdt Ramt':
-        max_angle_for_rep = 140
-        min_angle_for_rep = 160
+        max_angle_for_rep = 70
+        min_angle_for_rep = 120
+        Succesful_rep = 100
     else:
         # Default thresholds if difficulty is not recognized
-        max_angle_for_rep = 100
-        min_angle_for_rep = 130
+        max_angle_for_rep = 70
+        min_angle_for_rep = 150
+        Succesful_rep = 130
 
     cap = cv2.VideoCapture(0)
 
@@ -103,7 +107,7 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
     has_extended, wrist_extension_threshold = True, 90
 
     with open(csv_filename, mode='w', newline='') as csv_file:
-        fieldnames = ['Rep', 'Smallest_Angle', 'Contours_Count']
+        fieldnames = ['Rep', 'Highest_Angle', 'Contours_Count', 'Successful_Rep']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         # Write the header to the CSV file
@@ -115,8 +119,8 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
             if not ret:
                 break
 
-            # Initialize smallest_angle and contours_count for each repetition
-            smallest_angle = float('inf')
+            # Initialize highest_angle and contours_count for each iteration
+            highest_angle = 0
             contours_count = 0
 
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -135,6 +139,12 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
                 shoulder, elbow, wrist = find_arm_keypoints(body_contour, median_x, median_y)
                 elbow_angle = calculate_angle(shoulder, elbow, wrist)
 
+                # Update highest_angle for the current iteration
+                highest_angle = max(highest_angle, elbow_angle)
+                print(elbow_angle)
+
+
+
                 is_resting = elbow_angle > 160 and wrist[0] - median_x < wrist_extension_threshold
                 elbow_angle_text = "Resting" if is_resting else f'Angle: {int(elbow_angle)} deg'
                 cv2.putText(frame, elbow_angle_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
@@ -145,11 +155,15 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
                 if not has_extended and previous_angle > min_angle_for_rep and elbow_angle <= min_angle_for_rep:
                     rep_count += 1
                     has_extended = True
-
-                    # Log the smallest angle and contours count for the current rep (inverted)
-                    smallest_angle = min(smallest_angle, 180 - elbow_angle)
-                    writer.writerow(
-                        {'Rep': rep_count, 'Smallest_Angle': smallest_angle, 'Contours_Count': contours_count})
+                    successful_rep = elbow_angle > Succesful_rep
+                    print(f"Elbow Angle: {elbow_angle}, Successful Rep: {successful_rep}")
+                    # Log the success status along with other information
+                    writer.writerow({
+                        'Rep': rep_count,
+                        'Highest_Angle': round(highest_angle, 2),
+                        'Contours_Count': contours_count,
+                        'Successful_Rep': 'Succesful' if successful_rep else 'Unsuccesful'
+                    })
 
                 elif has_extended and elbow_angle <= min_angle_for_rep:
                     has_extended = False
