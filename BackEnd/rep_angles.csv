@@ -1,3 +1,6 @@
-Rep,Smallest_Angle
-1,131.4234372655012
-2,144.15699391506337
+Rep,Highest_Angle,Contours_Count,Successful_Rep
+1,53.14,16,Succesful
+2,51.84,11,Succesful
+3,40.71,9,Succesful
+4,70.26,13,Unsuccesful
+5,63.9,17,Unsuccesful
