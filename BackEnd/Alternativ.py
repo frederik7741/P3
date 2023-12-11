@@ -107,13 +107,16 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
     has_extended, wrist_extension_threshold = True, 90
 
     with open(csv_filename, mode='w', newline='') as csv_file:
-        fieldnames = ['Rep', 'Highest_Angle', 'Contours_Count', 'Successful_Rep']
+        fieldnames = ['Rep', 'Time', 'Time_Diff_From_Last_Rep', 'Angle_Diff_From_Last_Rep', 'Highest_Angle', 'Contours_Count', 'Successful_Rep']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         # Write the header to the CSV file
         writer.writeheader()
 
         start_time = time.time()
+        rep_start_time = start_time  # Initialize the rep_start_time
+        last_highest_angle = 0
+
         while time.time() - start_time < exercise_time:
             ret, frame = cap.read()
             if not ret:
@@ -155,11 +158,30 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
                 if not has_extended and previous_angle > min_angle_for_rep and elbow_angle <= min_angle_for_rep:
                     rep_count += 1
                     has_extended = True
+
+                    # Calculate the time passed since the last rep
+                    time_since_last_rep = time.time() - rep_start_time
+                    rep_start_time = time.time()  # Update rep_start_time for the next rep
+
+                    # Calculate the time difference from the last rep
+                    time_diff_from_last_rep = rep_start_time - start_time
+
                     successful_rep = elbow_angle > Succesful_rep
-                    print(f"Elbow Angle: {elbow_angle}, Successful Rep: {successful_rep}")
+
+                    # Calculate the angle difference from the last rep
+                    angle_diff_from_last_rep = highest_angle - last_highest_angle
+                    last_highest_angle = highest_angle
+
+                    print(f"Elbow Angle: {elbow_angle}, Successful Rep: {successful_rep}, "
+                          f"Time since last rep: {time_since_last_rep}, Time diff from last rep: {time_diff_from_last_rep}, "
+                          f"Angle diff from last rep: {angle_diff_from_last_rep}")
+
                     # Log the success status along with other information
                     writer.writerow({
                         'Rep': rep_count,
+                        'Time': round(time_since_last_rep, 2),
+                        'Time_Diff_From_Last_Rep': round(time_diff_from_last_rep, 2),
+                        'Angle_Diff_From_Last_Rep': round(angle_diff_from_last_rep, 2),
                         'Highest_Angle': round(highest_angle, 2),
                         'Contours_Count': contours_count,
                         'Successful_Rep': 'Succesful' if successful_rep else 'Unsuccesful'
