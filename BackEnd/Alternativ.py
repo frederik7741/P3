@@ -37,9 +37,9 @@ def draw_points_and_lines(frame, points):
             cv2.line(frame, (point[0], point[1]), (points[i + 1][0], points[i + 1][1]), (255, 0, 0), 2)
 
 def calibrate_keypoints(cap, background, num_samples=30):
-    print("Calibration starting in 7 seconds. Please stand in position.")
+    print("Calibration starting in 15 seconds. Please stand in position.")
     print("CALIBRATION_START")
-    cv2.waitKey(7000)
+    cv2.waitKey(15000)
     contour_points = []
 
     for _ in range(num_samples):
@@ -86,7 +86,7 @@ def main(exercise_time, difficulty, csv_filename="rep_angles.csv" ):
     else:
         # Default thresholds if difficulty is not recognized
         max_angle_for_rep = 70
-        min_angle_for_rep = 150
+        min_angle_for_rep = 130
         Succesful_rep = 130
 
     cap = cv2.VideoCapture(0)

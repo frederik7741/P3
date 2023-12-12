@@ -1,0 +1,13 @@
+Rep,Time,Time_Diff_From_Last_Rep,Angle_Diff_From_Last_Rep,Highest_Angle,Contours_Count,Successful_Rep
+1,0.12,0.12,139.81,139.81,5,Succesful
+2,0.26,0.37,0.0,139.81,6,Succesful
+3,1.12,1.49,-15.39,124.41,7,Succesful
+4,2.88,4.37,4.97,129.38,5,Succesful
+5,2.88,7.25,5.76,135.14,5,Succesful
+6,2.88,10.13,-3.92,131.23,7,Succesful
+7,5.87,16.01,1.97,133.2,7,Succesful
+8,3.14,19.14,4.6,137.8,11,Succesful
+9,3.01,22.15,-5.3,132.5,7,Succesful
+10,2.75,24.9,-5.76,126.75,8,Succesful
+11,2.62,27.53,-5.14,121.6,11,Succesful
+12,2.38,29.91,11.96,133.56,9,Succesful

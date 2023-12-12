@@ -1,0 +1,16 @@
+Rep,Time,Time_Diff_From_Last_Rep,Angle_Diff_From_Last_Rep,Highest_Angle,Contours_Count,Successful_Rep
+1,2.75,2.75,18.23,18.23,3,Unsuccesful
+2,0.38,3.13,107.56,125.79,4,Succesful
+3,2.37,5.5,-11.86,113.94,4,Unsuccesful
+4,2.38,7.88,-19.37,94.56,4,Unsuccesful
+5,2.0,9.88,43.86,138.43,5,Succesful
+6,2.0,11.88,-25.91,112.52,3,Unsuccesful
+7,1.76,13.64,21.86,134.38,4,Succesful
+8,2.0,15.64,-3.37,131.02,3,Succesful
+9,2.0,17.64,-9.92,121.1,4,Succesful
+10,1.76,19.4,-3.6,117.5,5,Unsuccesful
+11,1.87,21.27,-1.5,116.0,6,Unsuccesful
+12,3.38,24.65,23.47,139.47,7,Succesful
+13,1.87,26.52,-26.46,113.01,4,Unsuccesful
+14,1.63,28.15,18.49,131.49,4,Succesful
+15,1.76,29.91,2.59,134.09,6,Succesful
