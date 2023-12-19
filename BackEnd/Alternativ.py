@@ -36,7 +36,7 @@ def draw_points_and_lines(frame, points):
         if i < len(points) - 1:
             cv2.line(frame, (point[0], point[1]), (points[i + 1][0], points[i + 1][1]), (255, 0, 0), 2)
 
-def calibrate_keypoints(cap, background, num_samples=30):
+def calibrate_keypoints(cap, background, num_samples=90):
     print("Calibration starting in 15 seconds. Please stand in position.")
     print("CALIBRATION_START")
     cv2.waitKey(15000)
