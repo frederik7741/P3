@@ -11,7 +11,7 @@ Our project scope includes the implementation of image processing algorithms to 
 Ensure that you have the following dependencies installed on your system before running the Stroke Rehabilitation Exercise Repetition Counter:
 
 ### Python and Packages
-For using this system there are some Dependencies you need on your pc all of the packages can be downloaded in your code editor using the pip install (Name) in your terminal.
+For using this system there are some Dependencies you need on your pc, all of the packages can be downloaded in your code editor using the pip install (Name) in your terminal.
 
  **Python (3.7)**
    - The image processing is developed using the programming languages Python, and it is essential to have Python installed on your system. Download and install Python from [python.org](https://www.python.org/).
@@ -37,8 +37,8 @@ For using this system there are some Dependencies you need on your pc all of the
 ## Getting Started
 1. Download this Project.
 2. Get the Dependencies.
-3. Run there py FlaskServer.py script
-4. Run the unity build.
+3. Run the python FlaskServer.py script from P3/BackEnd/FlaskServer.py
+4. Run the Unity build from the Final folder in the P3/Ui/P3UIUnity/Final/P3UIUnity.exe.
 5. Use the program.
 ## License
 This project is licensed under the [MIT License](https://github.com/frederik7741/P3/blob/main/LICENSE). Feel free to use, modify, and distribute the code for both personal and commercial purposes
